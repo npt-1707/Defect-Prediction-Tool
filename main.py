@@ -1,11 +1,11 @@
 import argparse, os
+from urllib.parse import urlparse
 
 def read_args():
     parser = argparse.ArgumentParser()
 
-    model_input = parser.add_mutually_exclusive_group(required=True)
-    model_input.add_argument('-commit', type=str, default='', help='commit link')
-    model_input.add_argument('-feature', type=str, default='', help='.csv file path')
+    parser.add_argument('-commit', type=str, default='', help='commit link')
+    parser.add_argument('-feature', type=str, default='', help='.csv file path')
 
     parser.add_argument('-ensemble', action='store_true', help='enable ensemble')
 
@@ -21,6 +21,7 @@ def read_args():
 
     return parser
 
+# sourcery skip: raise-specific-error
 if __name__ == '__main__':
     params = read_args().parse_args()
 
@@ -32,12 +33,25 @@ if __name__ == '__main__':
         print(params.traditional)
         print(params.metric)
     
-    # Check if file exists
-    if not os.path.isfile(params.feature):
-        print(f'Error: {params.feature} does not exist')
-    else:
-        # Read file contents
-        with open(params.feature, 'r') as f:
-            file_contents = f.read()
+    if params.feature == '' and params.commit == '':
+        raise Exception("-commit or -feature is required")
+
+    if params.feature != '':
+        # Check if file exists
+        if not os.path.isfile(params.feature):
+            print(f'Error: {params.feature} does not exist')
+        else:
+            # Read file contents
+            with open(params.feature, 'r') as f:
+                file_contents = f.read()
+                if params.debug:
+                    print(file_contents)
+
+    if params.commit != '':
+        # Parse the URL and check if the hostname is github.com and the path contains /commit/
+        parsed_url = urlparse(params.commit)
+        if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
             if params.debug:
-                print(file_contents)
+                print(f'{params.commit} is a GitHub commit link')
+        else:
+            raise Exception(f'{params.commit} not a GitHub commit link')
