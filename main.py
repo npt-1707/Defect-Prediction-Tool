@@ -1,4 +1,4 @@
-import argparse, os
+import argparse, os, time
 from urllib.parse import urlparse
 
 def read_args():
@@ -15,7 +15,8 @@ def read_args():
     model.add_argument('-deep', nargs='+', type=str, choices=available_deep_models, help='list of deep learning models')
     model.add_argument('-traditional', nargs='+', type=str, choices=available_traditional_models, help='list of machine learning models')
 
-    parser.add_argument('-metric', nargs='+', type=str, default=['auc'], help='list of metrics')
+    available_metrics = ['auc', 'f1']
+    parser.add_argument('-metric', nargs='+', type=str, default=['auc'], choices=available_metrics, help='list of metrics')
 
     parser.add_argument('-debug', action='store_true', help='enable ensemble')
 
