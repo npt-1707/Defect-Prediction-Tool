@@ -1,4 +1,4 @@
-import argparse, os, time
+import argparse, os, time, requests
 from urllib.parse import urlparse
 
 def read_args():
@@ -69,3 +69,9 @@ if __name__ == '__main__':
         
     if params.debug:
         print(request)
+
+    response = requests.post('http://localhost:5000/api/template', json=request)
+    if response.status_code == 200:
+        print(response.json())  # {'message': 'accepted'}
+    else:
+        print('Error:', response.status_code)
