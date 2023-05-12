@@ -1,4 +1,4 @@
-import argparse
+import argparse, os
 
 def read_args():
     parser = argparse.ArgumentParser()
@@ -32,4 +32,12 @@ if __name__ == '__main__':
         print(params.traditional)
         print(params.metric)
     
-    
+    # Check if file exists
+    if not os.path.isfile(params.feature):
+        print(f'Error: {params.feature} does not exist')
+    else:
+        # Read file contents
+        with open(params.feature, 'r') as f:
+            file_contents = f.read()
+            if params.debug:
+                print(file_contents)
