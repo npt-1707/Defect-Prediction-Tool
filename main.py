@@ -33,6 +33,14 @@ if __name__ == '__main__':
         print(params.deep)
         print(params.traditional)
         print(params.metric)
+
+    request = {
+        "id": "main-" + str(int(time.time())),
+        'ensemble': params.ensemble,
+        "deep_models": params.deep,
+        "traditional_models": params.traditional,
+        'metric': params.metric
+    }
     
     if params.feature == '' and params.commit == '':
         raise Exception("-commit or -feature is required")
@@ -47,6 +55,7 @@ if __name__ == '__main__':
                 file_contents = f.read()
                 if params.debug:
                     print(file_contents)
+                request['feature'] = file_contents
 
     if params.commit != '':
         # Parse the URL and check if the hostname is github.com and the path contains /commit/
@@ -54,5 +63,9 @@ if __name__ == '__main__':
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
             if params.debug:
                 print(f'{params.commit} is a GitHub commit link')
+            request['commit'] = params.commit
         else:
             raise Exception(f'{params.commit} not a GitHub commit link')
+        
+    if params.debug:
+        print(request)
