@@ -12,8 +12,8 @@ def read_args():
     available_deep_models = ['deepjit', 'cc2vec', 'simcom']
     available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
     model = parser.add_mutually_exclusive_group(required=True)
-    model.add_argument('-deep', nargs='+', type=str, choices=available_deep_models, help='list of deep learning models')
-    model.add_argument('-traditional', nargs='+', type=str, choices=available_traditional_models, help='list of machine learning models')
+    model.add_argument('-deep', nargs='+', type=str, choices=available_deep_models, default =[], help='list of deep learning models')
+    model.add_argument('-traditional', nargs='+', type=str, choices=available_traditional_models, default=[], help='list of machine learning models')
 
     parser.add_argument('-debug', action='store_true', help='enable ensemble')
 
@@ -35,6 +35,7 @@ if __name__ == '__main__':
         'ensemble': params.ensemble,
         "deep_models": params.deep,
         "traditional_models": params.traditional,
+        "number_models": len(params.deep) + len(params.traditional)
     }
     
     if params.feature == '' and params.commit == '':
