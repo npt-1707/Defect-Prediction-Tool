@@ -1,5 +1,9 @@
 from flask import Flask, request
 import requests
+from utils import extract_info_from_commit_link
+
+# Dictionary mapping model_name and model_preprocessing
+preprocess_data = {}
 
 app = Flask(__name__)
 
@@ -21,17 +25,36 @@ def template():
             "number_models": int
         }
     '''
+    ## Handling feature if any
+    if 'features' in request_data:
+        '''
+            to THANH: em muon xu ly cai file .csv nhu nao thi lam o day
+            define module ben utils roi keo sang day nhe
+        '''
+        pass
+    ## Handling link_commit if any
+    if 'link_commit' in request_data:
+        commit_info = extract_info_from_commit_link(request_data['link_commit'])
 
     # Data Preprocessing
-    # Must return a model_request like below:
+    ## Must return a model_request like below
     '''
         {
             "id": string,
-            "number_models": int,
             "vectorized_feature": vectorized_feature
         }
     '''
 
+    ## Create a dict mapping model_name and model_input
+    model_name_to_model_input = {}
+
+    ## 
+    if app.debug:
+        print(request_data['traditional_models'] + request_data['deep_models'])
+    for model in request_data['traditional_models'] + request_data['deep_models']:
+        input = preprocess_data[model](commit_info)
+        model_name_to_model_input[model] = input
+        
     # Forward to model
     # for model in request_data["model"]:
     #     model_response = requests.post(f'http://localhost:5000/api/{model}', json=model_request.get_json())
