@@ -9,7 +9,7 @@ def read_args():
 
     parser.add_argument('-ensemble', action='store_true', help='enable ensemble')
 
-    available_deep_models = ['deepjit', 'cc2vec', 'simcom']
+    available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
     available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
     model = parser.add_mutually_exclusive_group(required=True)
     model.add_argument('-deep', nargs='+', type=str, choices=available_deep_models, default =[], help='list of deep learning models')
@@ -51,7 +51,7 @@ if __name__ == '__main__':
                 file_contents = f.read()
                 if params.debug:
                     print(file_contents)
-                request['feature'] = file_contents
+                request['features'] = file_contents
 
     if params.commit != '':
         # Parse the URL and check if the hostname is github.com and the path contains /commit/
@@ -59,7 +59,7 @@ if __name__ == '__main__':
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
             if params.debug:
                 print(f'{params.commit} is a GitHub commit link')
-            request['commit'] = params.commit
+            request['link_commit'] = params.commit
         else:
             raise Exception(f'{params.commit} not a GitHub commit link')
         
