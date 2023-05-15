@@ -57,7 +57,7 @@ def extract_owner_and_repo(commit_link):
 def extract_info_from_commit_link(link: str) -> dict:
 
     # Replace with your GitHub access token
-    access_token = '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'
+    access_token = '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'
 
     # Create a GitHub instance
     g = Github(access_token)
