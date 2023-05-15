@@ -1,7 +1,7 @@
-import argparse
+import requests, os
 from github import Github
-import requests, os, git_related_test, subprocess
-from git_related_test import Repo
+import utils, subprocess
+from git import Repo
 
 def get_file_changes_from_diff(diff, file_format):
     # sourcery skip: extract-duplicate-method
@@ -54,15 +54,7 @@ def extract_owner_and_repo(commit_link):
     # Return the owner and repository name
     return owner, repo_name, commit_hash
 
-def read_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-commit', type=str, default='', help='commit link')
-
-    return parser
-
-if __name__ == '__main__':
-    params = read_args().parse_args()
+def extract_info_from_commit_link(link: str) -> dict:
 
     # Replace with your GitHub access token
     access_token = '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'
@@ -70,14 +62,14 @@ if __name__ == '__main__':
     # Create a GitHub instance
     g = Github(access_token)
 
-    owner, repo_name, commit_hash = extract_owner_and_repo(params.commit)
+    owner, repo_name, commit_hash = extract_owner_and_repo(link)
 
     # Get the repository
     repo = g.get_repo(f'{owner}/{repo_name}')
 
     if not os.path.exists(f'repo/{repo_name}'):
         clone_url = repo.clone_url
-        git_related_test.Repo.clone_from(clone_url, f'repo/{repo_name}')
+        utils.Repo.clone_from(clone_url, f'repo/{repo_name}')
 
     repo = Repo(f'repo/{repo_name}') 
 
@@ -118,12 +110,9 @@ if __name__ == '__main__':
             file_format = '.js'
 
     file_changes, num_added_lines = get_file_changes_from_diff(output, file_format)
-    # Extract commit information
-    commit_info = {
+    return {
         'commit_hash': commit_hash,
         'commit_message': commit.message,
         'main_language_file_changes': file_changes,
-        'num_added_lines_in_main_language': num_added_lines
+        'num_added_lines_in_main_language': num_added_lines,
     }
-
-    print(commit_info)

@@ -18,8 +18,7 @@ def template():
             "ensemble": boolean,
             "deep_models": list of string,
             "traditional_models": list of string,
-            "number_models": int,
-            "metric": list of string
+            "number_models": int
         }
     '''
 
@@ -30,7 +29,6 @@ def template():
             "id": string,
             "number_models": int,
             "vectorized_feature": vectorized_feature
-            "metrics": list of string
         }
     '''
 
@@ -49,7 +47,7 @@ def template():
             "output": dictionary
         }
     '''
-    output = {'auc': 0}
+    output = {'result': 0}
     return {
         'id': request_data['id'],
         'output': output

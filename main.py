@@ -15,9 +15,6 @@ def read_args():
     model.add_argument('-deep', nargs='+', type=str, choices=available_deep_models, help='list of deep learning models')
     model.add_argument('-traditional', nargs='+', type=str, choices=available_traditional_models, help='list of machine learning models')
 
-    available_metrics = ['auc', 'f1']
-    parser.add_argument('-metric', nargs='+', type=str, default=['auc'], choices=available_metrics, help='list of metrics')
-
     parser.add_argument('-debug', action='store_true', help='enable ensemble')
 
     return parser
@@ -32,14 +29,12 @@ if __name__ == '__main__':
         print(params.ensemble)
         print(params.deep)
         print(params.traditional)
-        print(params.metric)
 
     request = {
         "id": "main-" + str(int(time.time())),
         'ensemble': params.ensemble,
         "deep_models": params.deep,
         "traditional_models": params.traditional,
-        'metric': params.metric
     }
     
     if params.feature == '' and params.commit == '':
