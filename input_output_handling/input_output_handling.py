@@ -11,7 +11,8 @@ app = Flask(__name__)
 def template():
     # Get request_data from main.py
     request_data = request.get_json()
-    print(request_data)
+    if app.debug:
+        print(request_data)
 
     # Handling message
     '''
@@ -41,27 +42,28 @@ def template():
     '''
         {
             "id": string,
-            "vectorized_feature": vectorized_feature
+            "input": input_type
         }
     '''
-
     ## Create a dict mapping model_name and model_input
     model_name_to_model_input = {}
-
-    ## 
+    ## Preprocessing data
     if app.debug:
         print(request_data['traditional_models'] + request_data['deep_models'])
     for model in request_data['traditional_models'] + request_data['deep_models']:
         input = preprocess_data[model](commit_info)
         model_name_to_model_input[model] = input
-        
+
     # Forward to model
-    # for model in request_data["model"]:
-    #     model_response = requests.post(f'http://localhost:5000/api/{model}', json=model_request.get_json())
-    #     if model_response.status_code == 200:
-    #         print(model_response.json())
-    #     else:
-    #         print('Error:', model_response.status_code)
+    output = {}
+    for model in request_data["model"]:
+        model_response = requests.post(f'http://localhost:5000/api/{model}', json=model_name_to_model_input[model].get_json())
+        if model_response.status_code == 200:
+            if app.debug:
+                print(model_response.json())
+            output[model] = model_response['output']
+        else:
+            print('Error:', model_response.status_code)
 
     # Create response like form below:
     '''
@@ -70,7 +72,6 @@ def template():
             "output": dictionary
         }
     '''
-    output = {'result': 0}
     return {
         'id': request_data['id'],
         'output': output
