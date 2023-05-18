@@ -1,9 +1,14 @@
 from flask import Flask, request
-import requests
+import requests, json
 from utils import extract_info_from_commit_link
 
 # Dictionary mapping model_name and model_preprocessing
-preprocess_data = {}
+def model_template_preprocess(data):
+    return 0
+
+preprocess_data = {
+    'model_template': model_template_preprocess
+}
 
 app = Flask(__name__)
 
@@ -46,21 +51,31 @@ def template():
         }
     '''
     ## Create a dict mapping model_name and model_input
+    model_input = {
+        'id': request_data['id']
+    }
     model_name_to_model_input = {}
     ## Preprocessing data
-    if app.debug:
-        print(request_data['traditional_models'] + request_data['deep_models'])
-    for model in request_data['traditional_models'] + request_data['deep_models']:
+    '''
+        for model in request_data['traditional_models'] + request_data['deep_models']:
+            input = preprocess_data[model](features)
+            model_name_to_model_input[model] = input
+    '''
+    for model in request_data['deep_models']:
         input = preprocess_data[model](commit_info)
-        model_name_to_model_input[model] = input
+        model_input['input'] = input
+        model_name_to_model_input[model] = model_input
 
     # Forward to model
     output = {}
-    for model in request_data["model"]:
-        model_response = requests.post(f'http://localhost:5000/api/{model}', json=model_name_to_model_input[model].get_json())
+    for model in request_data["deep_models"]:
+        if app.debug:
+            print(model_name_to_model_input[model])
+        model_response = requests.post(f'http://localhost:5001/api/{model}', json=model_name_to_model_input[model])
         if model_response.status_code == 200:
+            model_response = model_response.json()
             if app.debug:
-                print(model_response.json())
+                print(model_response)
             output[model] = model_response['output']
         else:
             print('Error:', model_response.status_code)
