@@ -1,13 +1,14 @@
 from flask import Flask, request
 import requests, json
 from utils import extract_info_from_commit_link
+from preprocess.preprocess import deep_preprocess
 
 # Dictionary mapping model_name and model_preprocessing
 def model_template_preprocess(data):
     return 0
 
 preprocess_data = {
-    'model_template': model_template_preprocess
+    'model_template': deep_preprocess
 }
 
 app = Flask(__name__)
