@@ -67,14 +67,17 @@ def template():
         with open("model_parameters/model_parameter.json", 'r') as file:
             params = json.load(file)
         input = preprocess_data[model](commit_info, params)
+        # if app.debug:
+        #     print(type(input[0]['code']))
         model_input['input'] = input
+        model_input['parameters'] = params 
         model_name_to_model_input[model] = model_input
 
     # Forward to model
     output = {}
     for model in request_data["deep_models"]:
-        if app.debug:
-            print(model_name_to_model_input[model])
+        # if app.debug:
+        #     print(model_name_to_model_input[model]['input'][0])
         model_response = requests.post(f'http://localhost:5001/api/{model}', json=model_name_to_model_input[model])
         if model_response.status_code == 200:
             model_response = model_response.json()

@@ -10,7 +10,7 @@ class DeepJIT(nn.Module):
 
         V_msg = params["vocab_msg"]
         V_code = params["vocab_code"]
-        Dim = params["embedding_dim"]
+        Dim = params["embedding_size"]
         Class = params["class_num"]
 
         Ci = 1  # input of convolutional layer

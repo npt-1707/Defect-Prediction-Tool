@@ -10,6 +10,7 @@ def template():
     '''
         {
             "id": string,
+            "parameters": dictionary,
             "input": input_type
         }
     '''
@@ -21,8 +22,7 @@ def template():
     code_loader, dict_msg, dict_code = request_data["input"]
 
     # Load parameters
-    with open("model_parameters.json", 'r') as file:
-        params = json.load(file)
+    params = request_data["parameters"]
 
     # Set up param
     params["filter_sizes"] = [int(k) for k in params["filter_sizes"].split(',')]
