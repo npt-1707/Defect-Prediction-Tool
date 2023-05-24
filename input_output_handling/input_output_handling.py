@@ -63,7 +63,10 @@ def template():
             model_name_to_model_input[model] = input
     '''
     for model in request_data['deep_models']:
-        input = preprocess_data[model](commit_info)
+        # Load parameters
+        with open("model_parameters/model_parameter.json", 'r') as file:
+            params = json.load(file)
+        input = preprocess_data[model](commit_info, params)
         model_input['input'] = input
         model_name_to_model_input[model] = model_input
 
