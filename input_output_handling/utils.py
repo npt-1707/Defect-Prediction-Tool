@@ -54,22 +54,18 @@ def extract_owner_and_repo(commit_link):
     # Return the owner and repository name
     return owner, repo_name, commit_hash
 
-def extract_info_from_commit_link(link: str) -> dict:
-
-    # # Replace with your GitHub access token
-    # access_token = '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'
-
-    # # Create a GitHub instance
-    # g = Github(access_token)
+def extract_info_from_commit_link(link: str, access_token: str) -> dict:
+    # Create a GitHub instance
+    g = Github(access_token)
 
     owner, repo_name, commit_hash = extract_owner_and_repo(link)
 
-    # # Get the repository
-    # repo = g.get_repo(f'{owner}/{repo_name}')
+    # Get the repository
+    repo = g.get_repo(f'{owner}/{repo_name}')
 
-    # if not os.path.exists(f'repo/{repo_name}'):
-    #     clone_url = repo.clone_url
-    #     utils.Repo.clone_from(clone_url, f'repo/{repo_name}')
+    if not os.path.exists(f'repo/{repo_name}'):
+        clone_url = repo.clone_url
+        utils.Repo.clone_from(clone_url, f'repo/{repo_name}')
 
     repo = Repo(f'repo/{repo_name}') 
 

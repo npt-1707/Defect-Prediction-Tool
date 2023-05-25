@@ -23,6 +23,7 @@ def template():
             "id": string,
             "features": .csv file,
             "link_commit": string,
+            "access_token": string,
             "ensemble": boolean,
             "deep_models": list of string,
             "traditional_models": list of string,
@@ -35,7 +36,7 @@ def template():
         pass
     ## Handling link_commit if any
     if 'link_commit' in request_data:
-        commit_info = extract_info_from_commit_link(request_data['link_commit'])
+        commit_info = extract_info_from_commit_link(request_data['link_commit'], request_data['access_token'])
 
     # Data Preprocessing
     ## Must return a model_request like below

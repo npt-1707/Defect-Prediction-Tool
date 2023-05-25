@@ -5,6 +5,7 @@ def read_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-commit', type=str, default='', help='commit link')
+    parser.add_argument('-access_token', type=str, default='', help='user access token')
     parser.add_argument('-feature', type=str, default='', help='.csv file path')
 
     parser.add_argument('-ensemble', action='store_true', help='enable ensemble')
@@ -24,7 +25,8 @@ if __name__ == '__main__':
     params = read_args().parse_args()
 
     if params.debug:
-        print("Commit: ", params.commit)
+        print("Commit link: ", params.commit)
+        print("Access token: ", params.access_token)
         print("Feature:", params.feature)
         print("Ensemble:", params.ensemble)
         print("DL models:", params.deep)
@@ -58,11 +60,14 @@ if __name__ == '__main__':
     if params.commit != '':
         if len(params.deep) == 0:
             raise Exception(f'Atleast 1 deep learning model is required')
+        if params.access_token == '':
+            raise Exception(f'Github access token is required')
         parsed_url = urlparse(params.commit)
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
             if params.debug:
                 print(f'{params.commit} is a GitHub commit link')
             request['link_commit'] = params.commit
+            request['access_token'] = params.access_token
         else:
             raise Exception(f'{params.commit} not a GitHub commit link')
         
@@ -73,4 +78,4 @@ if __name__ == '__main__':
     if response.status_code == 200:
         print(response.json())  # {'message': 'accepted'}
     else:
-        print('Error:', response.status_code)
+        raise Exception(response.status_code)
