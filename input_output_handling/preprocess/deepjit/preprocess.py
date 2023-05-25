@@ -9,7 +9,7 @@ def deepjit_preprocess(commit_info, params):
 
     code = hunks_to_code(commit)
     
-    dictionary = pickle.load(open("preprocess/dictionary/platform_dict.pkl", 'rb'))   
+    dictionary = pickle.load(open("preprocess/deepjit/dictionary/platform_dict.pkl", 'rb'))   
     dict_msg, dict_code = dictionary
 
     pad_msg = padding_data(data=[commit_message], dictionary=dict_msg, params=params, type='msg')        

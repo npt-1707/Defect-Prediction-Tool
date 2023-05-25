@@ -8,3 +8,4 @@ dictionary
 test.ipynb
 deepjit/__pycache__
 input_output_handling/preprocess/deepjit/dictionary
+input_output_handling/preprocess/deepjit/__pycache__

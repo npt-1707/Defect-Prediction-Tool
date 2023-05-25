@@ -4,7 +4,7 @@ import json, torch
 
 app = Flask(__name__)
 
-@app.route('/api/model_template', methods=['POST'])
+@app.route('/api/deepjit', methods=['POST'])
 def template():
     # Get request_data from main.py
     '''
