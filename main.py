@@ -12,7 +12,7 @@ def read_args():
     available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
     available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
     model = parser.add_mutually_exclusive_group()
-    model.add_argument('-deep', nargs='+', type=str, default=['deepjit'], choices=available_deep_models, help='list of deep learning models')
+    model.add_argument('-deep', nargs='+', type=str, default=[], choices=available_deep_models, help='list of deep learning models')
     model.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
 
     parser.add_argument('-debug', action='store_true', help='allow debug print')
