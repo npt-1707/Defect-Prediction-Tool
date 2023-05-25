@@ -116,3 +116,12 @@ def extract_info_from_commit_link(link: str) -> dict:
         'main_language_file_changes': file_changes,
         'num_added_lines_in_main_language': num_added_lines,
     }
+
+def hunks_to_code(file_levels: list) -> str:
+    code = []
+    for file_level in file_levels:
+        for hunk in file_level['code_changes']:
+            code.append(hunk['added_code'])
+            code.append(hunk['removed_code'])
+
+    return code

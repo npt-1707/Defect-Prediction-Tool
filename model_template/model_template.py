@@ -37,8 +37,10 @@ def template():
     model.eval()
     with torch.no_grad():
         # Extract data from DataLoader
-        code = code_loader["code"].to(params["device"])
-        message = code_loader["message"].to(params["device"])
+        code = torch.tensor(code_loader["code"], device=params["device"])
+        message = torch.tensor(code_loader["message"], device=params["device"])
+        print(code.size())
+        print(message.size())
 
         # Forward
         predict = model(message, code)
@@ -52,7 +54,7 @@ def template():
     '''
     return {
         'id': request_data["id"],
-        'output': predict
+        'output': predict.item()
     }
 
 if __name__ == '__main__':
