@@ -42,9 +42,11 @@ if __name__ == '__main__':
         raise Exception("-commit or -feature is required")
 
     if params.feature != '':
+        if len(params.traditional) == 0:
+            raise Exception(f'Atleast 1 traditional model is required')
         # Check if file exists
         if not os.path.isfile(params.feature):
-            print(f'Error: {params.feature} does not exist')
+            raise Exception(f'{params.feature} does not exist')
         else:
             # Read file contents
             with open(params.feature, 'r') as f:
@@ -54,7 +56,8 @@ if __name__ == '__main__':
                 request['features'] = file_contents
 
     if params.commit != '':
-        # Parse the URL and check if the hostname is github.com and the path contains /commit/
+        if len(params.deep) == 0:
+            raise Exception(f'Atleast 1 deep learning model is required')
         parsed_url = urlparse(params.commit)
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
             if params.debug:
