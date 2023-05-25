@@ -6,4 +6,5 @@ Tic-tac-toe-Game-using-Network-Socket-APIs
 input_output_handling/preprocess/__pycache__
 dictionary
 test.ipynb
-model_template/__pycache__
+deepjit/__pycache__
+input_output_handling/preprocess/deepjit/dictionary

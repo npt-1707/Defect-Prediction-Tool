@@ -12,10 +12,10 @@ def read_args():
     available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
     available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
     model = parser.add_mutually_exclusive_group()
-    model.add_argument('-deep', nargs='+', type=str, default=['model_template'], choices=available_deep_models, help='list of deep learning models')
-    model.add_argument('-traditional', nargs='+', type=str, default=['model_template'], choices=available_traditional_models, help='list of machine learning models')
+    model.add_argument('-deep', nargs='+', type=str, default=['deepjit'], choices=available_deep_models, help='list of deep learning models')
+    model.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
 
-    parser.add_argument('-debug', action='store_true', help='enable ensemble')
+    parser.add_argument('-debug', action='store_true', help='allow debug print')
 
     return parser
 
@@ -24,11 +24,11 @@ if __name__ == '__main__':
     params = read_args().parse_args()
 
     if params.debug:
-        print(params.commit)
-        print(params.feature)
-        print(params.ensemble)
-        print(params.deep)
-        print(params.traditional)
+        print("Commit: ", params.commit)
+        print("Feature:", params.feature)
+        print("Ensemble:", params.ensemble)
+        print("DL models:", params.deep)
+        print("ML models:", params.traditional)
 
     request = {
         "id": "main-" + str(int(time.time())),
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     if params.debug:
         print(request)
 
-    response = requests.post('http://localhost:5000/api/template', json=request)
+    response = requests.post('http://localhost:5000/api/input_output', json=request)
     if response.status_code == 200:
         print(response.json())  # {'message': 'accepted'}
     else:

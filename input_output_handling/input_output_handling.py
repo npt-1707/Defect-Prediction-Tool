@@ -1,28 +1,25 @@
 from flask import Flask, request
 import requests, json
 from utils import extract_info_from_commit_link
-from preprocess.preprocess import deep_preprocess
+from preprocess.deepjit.preprocess import deepjit_preprocess
 
 # Dictionary mapping model_name and model_preprocessing
-def model_template_preprocess(data):
-    return 0
-
 preprocess_data = {
-    'model_template': deep_preprocess
+    'deepjit': deepjit_preprocess
 }
 
 app = Flask(__name__)
 
-@app.route('/api/template', methods=['POST'])
+@app.route('/api/input_output', methods=['POST'])
 def template():
-    # Get request_data from main.py
+    # Get request_data from main.py 
     request_data = request.get_json()
     if app.debug:
         print(request_data)
 
-    # Handling message
+    #----- Handling request -------------------#
     '''
-        {
+        request {
             "id": string,
             "features": .csv file,
             "link_commit": string,
@@ -34,10 +31,7 @@ def template():
     '''
     ## Handling feature if any
     if 'features' in request_data:
-        '''
-            to THANH: em muon xu ly cai file .csv nhu nao thi lam o day
-            define module ben utils roi keo sang day nhe
-        '''
+        # THANH'S CODE
         pass
     ## Handling link_commit if any
     if 'link_commit' in request_data:
@@ -51,33 +45,27 @@ def template():
             "input": input_type
         }
     '''
-    ## Create a dict mapping model_name and model_input
+    ## A dict mapping model_name and model_input
     model_input = {
         'id': request_data['id']
     }
     model_name_to_model_input = {}
-    ## Preprocessing data
-    '''
-        for model in request_data['traditional_models'] + request_data['deep_models']:
-            input = preprocess_data[model](features)
-            model_name_to_model_input[model] = input
-    '''
+    ## Preprocessing data for deep models
+    for model in request_data['traditional_models']:
+        # THANH'S CODE
+        pass
+    ## Preprocessing data for deep models
     for model in request_data['deep_models']:
-        # Load parameters
-        with open("model_parameters/model_parameter.json", 'r') as file:
+        with open(f"model_parameters/{model}.json", 'r') as file:
             params = json.load(file)
         input = preprocess_data[model](commit_info, params)
-        # if app.debug:
-        #     print(type(input[0]['code']))
         model_input['input'] = input
         model_input['parameters'] = params 
         model_name_to_model_input[model] = model_input
 
     # Forward to model
     output = {}
-    for model in request_data["deep_models"]:
-        # if app.debug:
-        #     print(model_name_to_model_input[model]['input'][0])
+    for model in request_data["traditional_models"] + request_data["deep_models"]:
         model_response = requests.post(f'http://localhost:5001/api/{model}', json=model_name_to_model_input[model])
         if model_response.status_code == 200:
             model_response = model_response.json()

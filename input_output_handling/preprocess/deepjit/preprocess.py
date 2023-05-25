@@ -1,8 +1,8 @@
 import pickle
-from preprocess.padding import padding_data
+from preprocess.deepjit.padding import padding_data
 from utils import hunks_to_code
 
-def deep_preprocess(commit_info, params):
+def deepjit_preprocess(commit_info, params):
     # Extract commit message
     commit_message = commit_info['commit_message']
     commit = commit_info['main_language_file_changes']
