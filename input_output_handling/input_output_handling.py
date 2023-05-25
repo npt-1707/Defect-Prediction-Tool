@@ -21,6 +21,7 @@ def template():
     '''
         request {
             "id": string,
+            "commit_info": dict,
             "features": .csv file,
             "link_commit": string,
             "access_token": string,
@@ -37,6 +38,9 @@ def template():
     ## Handling link_commit if any
     if 'link_commit' in request_data:
         commit_info = extract_info_from_commit_link(request_data['link_commit'], request_data['access_token'])
+    ## Handling commit_info if any
+    if 'commit_info' in request_data:
+        commit_info = request_data["commit_info"]
 
     # Data Preprocessing
     ## Must return a model_request like below
