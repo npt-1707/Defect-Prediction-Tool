@@ -10,3 +10,5 @@ test.ipynb
 deepjit/__pycache__
 input_output_handling/preprocess/deepjit/dictionary
 input_output_handling/preprocess/deepjit/__pycache__
+cc2vec/__pycache__
+cc2vec/pretrained_models
