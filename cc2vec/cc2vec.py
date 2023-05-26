@@ -27,7 +27,8 @@ def template():
     # Set up param
     params["filter_sizes"] = [int(k) for k in params["filter_sizes"].split(',')]
     params["vocab_msg"], params["vocab_code"] = len(dict_msg), len(dict_code)
-    params["class_num"] = 1
+    params["cc2vec_class_num"] = len(code_loader["message"])
+    params["deepjit_class_num"] = 1
 
     # Create model and Load pretrain
     cc2vec = HierachicalRNN(params).to(device=params["device"])

@@ -89,15 +89,15 @@ class HunkRNN(nn.Module):
 
 # The HAN model
 class HierachicalRNN(nn.Module):
-    def __init__(self, args):
+    def __init__(self, params):
         super(HierachicalRNN, self).__init__()
-        self.vocab_size = args.vocab_code
-        self.batch_size = args.batch_size
-        self.embed_size = args.embed_size
-        self.hidden_size = args.hidden_size
-        self.cls = args.class_num
+        self.vocab_size = params['vocab_code']
+        self.batch_size = params['batch_size']
+        self.embed_size = params['embedding_size']
+        self.hidden_size = params['hidden_size']
+        self.cls = params['cc2vec_class_num']
 
-        self.dropout = nn.Dropout(args.dropout_keep_prob)  # drop out
+        self.dropout = nn.Dropout(params['dropout_rate'])  # drop out
 
         # Word Encoder
         self.wordRNN = WordRNN(self.vocab_size, self.embed_size, self.batch_size, self.hidden_size)
@@ -234,19 +234,19 @@ class HierachicalRNN(nn.Module):
         return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
     
 class DeepJITExtended(nn.Module):
-    def __init__(self, args):
+    def __init__(self, params):
         super(DeepJITExtended, self).__init__()
-        self.args = args
+        self.params = params
 
-        V_msg = args.vocab_msg
-        V_code = args.vocab_code
-        Dim = args.embedding_dim
-        Class = args.class_num
-        Embedding = args.embedding_ftr
+        V_msg = params['vocab_msg']
+        V_code = params['vocab_code']
+        Dim = params['embedding_size']
+        Class = params['deepjit_class_num']
+        Embedding = params['embedding_size']
 
         Ci = 1  # input of convolutional layer
-        Co = args.num_filters  # output of convolutional layer
-        Ks = args.filter_sizes  # kernel sizes
+        Co = params['num_filters']  # output of convolutional layer
+        Ks = params['filter_sizes']  # kernel sizes
 
         # CNN-2D for commit message
         self.embed_msg = nn.Embedding(V_msg, Dim)
@@ -258,9 +258,9 @@ class DeepJITExtended(nn.Module):
         self.convs_code_file = nn.ModuleList([nn.Conv2d(Ci, Co, (K, Co * len(Ks))) for K in Ks])
 
         # other information
-        self.dropout = nn.Dropout(args.dropout_keep_prob)
-        self.fc1 = nn.Linear(2 * len(Ks) * Co + Embedding, args.hidden_units)  # hidden units
-        self.fc2 = nn.Linear(args.hidden_units, Class)
+        self.dropout = nn.Dropout(params['dropout_rate'])
+        self.fc1 = nn.Linear(2 * len(Ks) * Co + Embedding, params['hidden_size'])  # hidden units
+        self.fc2 = nn.Linear(params['hidden_size'], Class)
         self.sigmoid = nn.Sigmoid()
 
     def forward_msg(self, x, convs):
@@ -279,7 +279,7 @@ class DeepJITExtended(nn.Module):
         x = self.forward_msg(x=x, convs=convs_line)
 
         # apply cnn 2d for each file in a commit code
-        x = x.reshape(n_batch, n_file, self.args.num_filters * len(self.args.filter_sizes))
+        x = x.reshape(n_batch, n_file, self.params['num_filters'] * len(self.params['filter_sizes']))
         x = self.forward_msg(x=x, convs=convs_hunks)
         return x
 
