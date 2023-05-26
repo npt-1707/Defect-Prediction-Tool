@@ -91,10 +91,11 @@ class HunkRNN(nn.Module):
 class HierachicalRNN(nn.Module):
     def __init__(self, params):
         super(HierachicalRNN, self).__init__()
+        self.params = params
         self.vocab_size = params['vocab_code']
         self.batch_size = params['batch_size']
         self.embed_size = params['embedding_size']
-        self.hidden_size = params['hidden_size']
+        self.hidden_size = params['cc2vec_hidden_size']
         self.cls = params['cc2vec_class_num']
 
         self.dropout = nn.Dropout(params['dropout_rate'])  # drop out
@@ -152,43 +153,7 @@ class HierachicalRNN(nn.Module):
         nn = self.standard_neural_network_layer(added_code=x_added_code, removed_code=x_removed_code)
         ntn = self.neural_network_tensor_layer(added_code=x_added_code, removed_code=x_removed_code)
 
-        x_diff_code = torch.cat((subtract, multiple, cos, euc, nn, ntn), dim=1)
-        x_diff_code = self.dropout(x_diff_code)
-
-        out = self.fc1(x_diff_code)
-        out = F.relu(out)
-        out = self.fc2(out)
-        out = self.sigmoid(out).squeeze(1)
-        return out
-
-    def forward_commit_embeds_diff(self, added_code, removed_code, hid_state_hunk, hid_state_sent, hid_state_word):
-        hid_state = (hid_state_hunk, hid_state_sent, hid_state_word)
-
-        x_added_code = self.forward_code(x=added_code, hid_state=hid_state)
-        x_removed_code = self.forward_code(x=removed_code, hid_state=hid_state)
-
-        x_added_code = x_added_code.view(self.batch_size, self.embed_size)
-        x_removed_code = x_removed_code.view(self.batch_size, self.embed_size)
-
-        subtract = self.subtraction(added_code=x_added_code, removed_code=x_removed_code)
-        multiple = self.multiplication(added_code=x_added_code, removed_code=x_removed_code)
-        cos = self.cosine_similarity(added_code=x_added_code, removed_code=x_removed_code)
-        euc = self.euclidean_similarity(added_code=x_added_code, removed_code=x_removed_code)
-        nn = self.standard_neural_network_layer(added_code=x_added_code, removed_code=x_removed_code)
-        ntn = self.neural_network_tensor_layer(added_code=x_added_code, removed_code=x_removed_code)
-
         return torch.cat((subtract, multiple, cos, euc, nn, ntn), dim=1)
-
-    def forward_commit_embeds(self, added_code, removed_code, hid_state_hunk, hid_state_sent, hid_state_word):
-        hid_state = (hid_state_hunk, hid_state_sent, hid_state_word)
-
-        x_added_code = self.forward_code(x=added_code, hid_state=hid_state)
-        x_removed_code = self.forward_code(x=removed_code, hid_state=hid_state)
-
-        x_added_code = x_added_code.view(self.batch_size, self.embed_size)
-        x_removed_code = x_removed_code.view(self.batch_size, self.embed_size)
-
-        return torch.cat((x_added_code, x_removed_code), dim=1)
 
     def subtraction(self, added_code, removed_code):
         return added_code - removed_code
@@ -259,8 +224,8 @@ class DeepJITExtended(nn.Module):
 
         # other information
         self.dropout = nn.Dropout(params['dropout_rate'])
-        self.fc1 = nn.Linear(2 * len(Ks) * Co + Embedding, params['hidden_size'])  # hidden units
-        self.fc2 = nn.Linear(params['hidden_size'], Class)
+        self.fc1 = nn.Linear(2 * len(Ks) * Co + Embedding, params['deepjit_hidden_size'])  # hidden units
+        self.fc2 = nn.Linear(params['deepjit_hidden_size'], Class)
         self.sigmoid = nn.Sigmoid()
 
     def forward_msg(self, x, convs):

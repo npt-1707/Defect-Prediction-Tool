@@ -1,6 +1,7 @@
 from flask import Flask, request
 from model import HierachicalRNN, DeepJITExtended
 import torch
+import numpy as np
 
 app = Flask(__name__)
 
@@ -27,27 +28,32 @@ def template():
     # Set up param
     params["filter_sizes"] = [int(k) for k in params["filter_sizes"].split(',')]
     params["vocab_msg"], params["vocab_code"] = len(dict_msg), len(dict_code)
-    params["cc2vec_class_num"] = len(code_loader["message"])
+    params["cc2vec_class_num"] = len(dict_msg)
     params["deepjit_class_num"] = 1
 
-    # Create model and Load pretrain
     cc2vec = HierachicalRNN(params).to(device=params["device"])
     cc2vec.load_state_dict(torch.load(params["pretrained_cc2vec"]))
-    deepjit = DeepJITExtended(params).to(device=params["device"])
-    deepjit.load_state_dict(torch.load(params["pretrained_deepjit"]))
-
-    # Forward
     cc2vec.eval()
-    deepjit.eval()
     with torch.no_grad():
         # Extract data from DataLoader
-        added_code = torch.tensor(code_loader["added_code"], device=params["device"])
-        removed_code = torch.tensor(code_loader["removed_code"], device=params["device"])
+        added_code = np.array(code_loader["added_code"])
+        removed_code = np.array(code_loader["removed_code"])
+
+        # Forward
+        state_word = cc2vec.init_hidden_word()
+        state_sent = cc2vec.init_hidden_sent()
+        state_hunk = cc2vec.init_hidden_hunk()
+        feature = cc2vec(added_code, removed_code, state_hunk, state_sent, state_word)
+
+    params["embedding_feature"] = feature.shape[1]
+
+    deepjit = DeepJITExtended(params).to(device=params["device"])
+    deepjit.load_state_dict(torch.load(params["pretrained_deepjit"]))
+    deepjit.eval()
+    with torch.no_grad():
         code = torch.tensor(code_loader["code"], device=params["device"])
         message = torch.tensor(code_loader["message"], device=params["device"])
 
-        # Forward
-        feature = cc2vec(added_code, removed_code)
         predict = deepjit.forward(feature, message, code)
 
     # Create response like form below:

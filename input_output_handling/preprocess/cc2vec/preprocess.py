@@ -17,11 +17,11 @@ def cc2vec_preprocess(commit_info, params):
     pad_code = padding_data(data=[code], dictionary=dict_code, params=params, type='code')
 
     # CC2Vec
-    added_code, removed_code = clean_and_reformat_code(commit)
-    pad_added_code = padding_commit_code(data=added_code, max_file=params['code_file'], max_line=params['code_line'], max_length=params['cc2vec_code_length'])
-    pad_removed_code = padding_commit_code(data=removed_code, max_file=params['code_file'], max_line=params['code_line'], max_length=params['cc2vec_code_length'])
-    pad_added_code = mapping_dict_code(pad_code=pad_added_code, dict_code=dict_code)
-    pad_removed_code = mapping_dict_code(pad_code=pad_removed_code, dict_code=dict_code)
+    added_code, removed_code = cc2vec_clean_and_reformat_code(commit)
+    pad_added_code = cc2vec_padding_commit_code(data=added_code, max_file=params['code_file'], max_line=params['code_line'], max_length=params['cc2vec_code_length'])
+    pad_removed_code = cc2vec_padding_commit_code(data=removed_code, max_file=params['code_file'], max_line=params['code_line'], max_length=params['cc2vec_code_length'])
+    pad_added_code = cc2vec_mapping_dict_code(pad_code=pad_added_code, dict_code=dict_code)
+    pad_removed_code = cc2vec_mapping_dict_code(pad_code=pad_removed_code, dict_code=dict_code)
 
     # Using Pytorch Dataset and DataLoader
     code = {
