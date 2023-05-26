@@ -41,7 +41,10 @@ def get_file_changes_from_diff(diff, file_format):
         
     return list_file_changes, num_added_lines
 
-def extract_repo_name(path: str) -> str:
+def extract_repo_name_owner(path: str) -> str:
+    repo = Repo(path)
+    remote_url = repo.remotes.origin.url
+    owner = remote_url.split('/')[-2]
     # Split the link by '/' character
     parts = path.split('/')
 
@@ -49,14 +52,12 @@ def extract_repo_name(path: str) -> str:
     repo_name = parts[-1]
 
     # Return the owner and repository name
-    return repo_name
+    return repo, repo_name, owner
 
-def extract_info_from_repo_path(path: str, owner: str) -> dict:
-    repo_name = extract_repo_name(path)
+def extract_info_from_repo_path(path: str, commit_hash: str) -> dict:
+    repo, repo_name, owner = extract_repo_name_owner(path)
 
-    repo = Repo(f'{repo_name}') 
-
-    commit = repo.commit('HEAD')
+    commit = repo.commit(commit_hash)
 
     api_url = f'https://api.github.com/repos/{owner}/{repo_name}'
 
@@ -73,9 +74,8 @@ def extract_info_from_repo_path(path: str, owner: str) -> dict:
     else:
         print(f'Failed to get repository details. Status code: {response.status_code}')
 
-    commit = repo.commit('HEAD')
     # Define the command to be executed
-    command = f"cd {repo_name} && git show HEAD"
+    command = f"cd {path} && git show {commit_hash}"
 
     # Run the command and capture the output
     output = subprocess.check_output(command, shell=True, text=True)
@@ -94,7 +94,7 @@ def extract_info_from_repo_path(path: str, owner: str) -> dict:
 
     file_changes, num_added_lines = get_file_changes_from_diff(output, file_format)
     return {
-        'commit_hash': 'HEAD',
+        'commit_hash': commit_hash,
         'commit_message': commit.message,
         'main_language_file_changes': file_changes,
         'num_added_lines_in_main_language': num_added_lines,
@@ -104,7 +104,7 @@ def read_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-repo', type=str, default='', help='path to git repo')
-    parser.add_argument('-owner', type=str, default='', help='repo owner')
+    parser.add_argument('-commit_hash', type=str, default='HEAD', help='commit hash')
     parser.add_argument('-commit', type=str, default='', help='commit link')
     parser.add_argument('-access_token', type=str, default='', help='user access token')
     parser.add_argument('-feature', type=str, default='', help='.csv file path')
@@ -126,6 +126,8 @@ if __name__ == '__main__':
     params = read_args().parse_args()
 
     if params.debug:
+        print("Repo: ", params.repo)
+        print("Commit hash: ", params.commit_hash)
         print("Commit link: ", params.commit)
         print("Access token: ", params.access_token)
         print("Feature:", params.feature)
@@ -173,9 +175,7 @@ if __name__ == '__main__':
             raise Exception(f'{params.commit} not a GitHub commit link')
 
     if params.repo != '':
-        if params.owner == '':
-            raise Exception(f"Reporisoty's owner is required")
-        commit_info = extract_info_from_repo_path(params.repo, params.owner)
+        commit_info = extract_info_from_repo_path(params.repo, params.commit_hash)
         request['commit_info'] = commit_info
         
     if params.debug:
