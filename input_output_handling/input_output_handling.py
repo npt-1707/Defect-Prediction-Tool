@@ -2,10 +2,12 @@ from flask import Flask, request
 import requests, json
 from utils import extract_info_from_commit_link
 from preprocess.deepjit.preprocess import deepjit_preprocess
+from preprocess.cc2vec.preprocess import cc2vec_preprocess
 
 # Dictionary mapping model_name and model_preprocessing
 preprocess_data = {
-    'deepjit': deepjit_preprocess
+    'deepjit': deepjit_preprocess,
+    'cc2vec': cc2vec_preprocess
 }
 
 app = Flask(__name__)
