@@ -57,10 +57,6 @@ def template():
             "input": input_type
         }
     '''
-    ## A dict mapping model_name and model_input
-    model_input = {
-        'id': request_data['id']
-    }
     model_name_to_model_input = {}
     ## Preprocessing data for deep models
     for model in request_data['traditional_models']:
@@ -68,17 +64,24 @@ def template():
         pass
     ## Preprocessing data for deep models
     for model in request_data['deep_models']:
+        model_name_to_model_input[model] = {
+            'id': request_data['id']
+        }
         with open(f"model_parameters/{model}.json", 'r') as file:
             params = json.load(file)
         input = preprocess_data[model](commit_info, params)
-        model_input['input'] = input
-        model_input['parameters'] = params 
-        model_name_to_model_input[model] = model_input
+        model_name_to_model_input[model]['input'] = input
+        model_name_to_model_input[model]['parameters'] = params
+
+    for model in request_data['deep_models']:
+        print(model)
+        print(model_name_to_model_input[model]['parameters'])
 
     # Forward to model
     output = {}
     for model in request_data["traditional_models"] + request_data["deep_models"]:
-        model_response = requests.post(api_lists[model], json=model_name_to_model_input[model])
+        send_message = model_name_to_model_input[model]
+        model_response = requests.post(api_lists[model], json=send_message)
         if model_response.status_code == 200:
             model_response = model_response.json()
             if app.debug:

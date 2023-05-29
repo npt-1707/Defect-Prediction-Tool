@@ -17,7 +17,7 @@ def template():
     '''
     request_data = request.get_json()
     if app.debug:
-        print(request_data)
+        print(request_data["parameters"])
 
     # Split input
     code_loader, dict_msg, dict_code = request_data["input"]
