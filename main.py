@@ -125,15 +125,15 @@ def read_args():
 if __name__ == '__main__':
     params = read_args().parse_args()
 
-    if params.debug:
-        print("Repo: ", params.repo)
-        print("Commit hash: ", params.commit_hash)
-        print("Commit link: ", params.commit)
-        print("Access token: ", params.access_token)
-        print("Feature:", params.feature)
-        print("Ensemble:", params.ensemble)
-        print("DL models:", params.deep)
-        print("ML models:", params.traditional)
+    # if params.debug:
+    #     print("Repo: ", params.repo)
+    #     print("Commit hash: ", params.commit_hash)
+    #     print("Commit link: ", params.commit)
+    #     print("Access token: ", params.access_token)
+    #     print("Feature:", params.feature)
+    #     print("Ensemble:", params.ensemble)
+    #     print("DL models:", params.deep)
+    #     print("ML models:", params.traditional)
 
     request = {
         "id": "main-" + str(int(time.time())),
@@ -156,8 +156,8 @@ if __name__ == '__main__':
             # Read file contents
             with open(params.feature, 'r') as f:
                 file_contents = f.read()
-                if params.debug:
-                    print(file_contents)
+                # if params.debug:
+                #     print(file_contents)
                 request['features'] = file_contents
 
     if params.commit != '':
@@ -167,8 +167,8 @@ if __name__ == '__main__':
             raise Exception(f'Github access token is required')
         parsed_url = urlparse(params.commit)
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
-            if params.debug:
-                print(f'{params.commit} is a GitHub commit link')
+            # if params.debug:
+            #     print(f'{params.commit} is a GitHub commit link')
             request['link_commit'] = params.commit
             request['access_token'] = params.access_token
         else:
@@ -183,6 +183,6 @@ if __name__ == '__main__':
 
     response = requests.post('http://localhost:5000/api/input_output', json=request)
     if response.status_code == 200:
-        print(response.json())  # {'message': 'accepted'}
+        print(response.json())
     else:
         raise Exception(response.status_code)

@@ -15,8 +15,8 @@ def template():
         }
     '''
     request_data = request.get_json()
-    if app.debug:
-        print(request_data["parameters"])
+    # if app.debug:
+    #     print(request_data["parameters"])
 
     # Split input
     code_loader, dict_msg, dict_code = request_data["input"]
@@ -39,8 +39,6 @@ def template():
         # Extract data from DataLoader
         code = torch.tensor(code_loader["code"], device=params["device"])
         message = torch.tensor(code_loader["message"], device=params["device"])
-        print(code.size())
-        print(message.size())
 
         # Forward
         predict = model(message, code)
