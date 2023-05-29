@@ -207,7 +207,7 @@ class DeepJITExtended(nn.Module):
         V_code = params['vocab_code']
         Dim = params['embedding_size']
         Class = params['deepjit_class_num']
-        Embedding = params['embedding_size']
+        Embedding = params['embedding_feature']
 
         Ci = 1  # input of convolutional layer
         Co = params['num_filters']  # output of convolutional layer

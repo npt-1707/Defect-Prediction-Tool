@@ -46,6 +46,7 @@ def template():
         feature = cc2vec(added_code, removed_code, state_hunk, state_sent, state_word)
 
     params["embedding_feature"] = feature.shape[1]
+    print(feature.shape)
 
     deepjit = DeepJITExtended(params).to(device=params["device"])
     deepjit.load_state_dict(torch.load(params["pretrained_deepjit"]))
@@ -69,4 +70,4 @@ def template():
     }
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    app.run(debug=True, host="0.0.0.0", port=5002)
