@@ -13,6 +13,7 @@ preprocess_data = {
 api_lists = {
     'deepjit': "http://localhost:5001/api/deepjit",
     'cc2vec': "http://localhost:5002/api/cc2vec",
+    'lapredict': "https://localhost:8001/api/lapredict"
 }
 
 app = Flask(__name__)
@@ -40,8 +41,7 @@ def template():
     '''
     ## Handling feature if any
     if 'features' in request_data:
-        # THANH'S CODE
-        pass
+        features = request_data["features"]
     ## Handling link_commit if any
     if 'link_commit' in request_data:
         commit_info = extract_info_from_commit_link(request_data['link_commit'], request_data['access_token'])
@@ -60,8 +60,10 @@ def template():
     model_name_to_model_input = {}
     ## Preprocessing data for deep models
     for model in request_data['traditional_models']:
-        # THANH'S CODE
-        pass
+        model_name_to_model_input[model] = {
+            'id': request_data['id'],
+            "input": features
+        }
     ## Preprocessing data for deep models
     for model in request_data['deep_models']:
         model_name_to_model_input[model] = {
@@ -81,6 +83,7 @@ def template():
     output = {}
     for model in request_data["traditional_models"] + request_data["deep_models"]:
         send_message = model_name_to_model_input[model]
+        print(send_message)
         model_response = requests.post(api_lists[model], json=send_message)
         if model_response.status_code == 200:
             model_response = model_response.json()

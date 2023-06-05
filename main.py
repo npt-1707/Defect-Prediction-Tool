@@ -2,6 +2,7 @@ import argparse, os, time, requests
 from urllib.parse import urlparse
 import subprocess
 from git import Repo
+import pandas as pd
 
 def get_file_changes_from_diff(diff, file_format):
     # sourcery skip: extract-duplicate-method
@@ -154,11 +155,12 @@ if __name__ == '__main__':
             raise Exception(f'{params.feature} does not exist')
         else:
             # Read file contents
-            with open(params.feature, 'r') as f:
-                file_contents = f.read()
-                # if params.debug:
-                #     print(file_contents)
-                request['features'] = file_contents
+            # with open(params.feature, 'r') as f:
+            #     file_contents = f.read()
+            #     # if params.debug:
+            #     #     print(file_contents)
+                # request['features'] = file_contents
+            request['features'] = pd.read_csv(params.feature).to_dict("records")[0]
 
     if params.commit != '':
         if len(params.deep) == 0:
