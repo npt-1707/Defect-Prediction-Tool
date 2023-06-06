@@ -1,6 +1,6 @@
 import argparse, os, time, requests
 from urllib.parse import urlparse
-import subprocess
+import subprocess, json
 from git import Repo
 import pandas as pd
 
@@ -71,9 +71,8 @@ def extract_info_from_repo_path(path: str, commit_hash: str) -> dict:
         data = response.json()
         # Extract the main programming language from the response
         main_language = data['language']
-        print(f'The main programming language of the repository is: {main_language}')
     else:
-        print(f'Failed to get repository details. Status code: {response.status_code}')
+        raise Exception(f'Failed to get repository details. Status code: {response.status_code}')
 
     # Define the command to be executed
     command = f"cd {path} && git show {commit_hash}"
@@ -114,9 +113,8 @@ def read_args():
 
     available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
     available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
-    model = parser.add_mutually_exclusive_group()
-    model.add_argument('-deep', nargs='+', type=str, default=[], choices=available_deep_models, help='list of deep learning models')
-    model.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
+    parser.add_argument('-deep', nargs='+', type=str, default=[], choices=available_deep_models, help='list of deep learning models')
+    parser.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
 
     parser.add_argument('-debug', action='store_true', help='allow debug print')
 
@@ -154,12 +152,6 @@ if __name__ == '__main__':
         if not os.path.isfile(params.feature):
             raise Exception(f'{params.feature} does not exist')
         else:
-            # Read file contents
-            # with open(params.feature, 'r') as f:
-            #     file_contents = f.read()
-            #     # if params.debug:
-            #     #     print(file_contents)
-                # request['features'] = file_contents
             request['features'] = pd.read_csv(params.feature).to_dict("records")[0]
 
     if params.commit != '':
@@ -181,10 +173,10 @@ if __name__ == '__main__':
         request['commit_info'] = commit_info
         
     if params.debug:
-        print(request)
+        print("Request: ", json.dumps(request, indent=4))
 
     response = requests.post('http://localhost:5000/api/input_output', json=request)
     if response.status_code == 200:
-        print(response.json())
+        print("Response: ", json.dumps(response.json(), indent=4))
     else:
         raise Exception(response.status_code)

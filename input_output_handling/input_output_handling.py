@@ -83,7 +83,6 @@ def template():
     output = {}
     for model in request_data["traditional_models"] + request_data["deep_models"]:
         send_message = model_name_to_model_input[model]
-        print(send_message)
         model_response = requests.post(api_lists[model], json=send_message)
         if model_response.status_code == 200:
             model_response = model_response.json()
@@ -91,7 +90,7 @@ def template():
             #     print(model_response)
             output[model] = model_response['output']
         else:
-            print('Error:', model_response.status_code)
+            raise Exception('Error:', model_response.status_code)
 
     # Create response like form below:
     '''
