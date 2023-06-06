@@ -14,3 +14,5 @@ cc2vec/__pycache__
 cc2vec/pretrained_models
 input_output_handling/preprocess/cc2vec/__pycache__
 start.sh
+test_la.csv
+test_la.sh
