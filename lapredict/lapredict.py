@@ -15,11 +15,9 @@ def template():
         }
     '''
     request_data = request.get_json()
-    if app.debug:
-        print(request_data["input"])
 
     # get input
-    input = request_data["input"]["la"]
+    input = {"la":[request_data["input"]["la"]]}
     input = pd.DataFrame(input)
 
     # get model
@@ -30,6 +28,10 @@ def template():
         with open(os.path.join(model_path, file), "rb") as f:
             model = pickle.load(f) 
         predict.append(model.predict_proba(input)[:, 1][0])
+    
+    if app.debug:
+        print(input)
+        print(predict)
     # Create response like form below:
     '''
         {
