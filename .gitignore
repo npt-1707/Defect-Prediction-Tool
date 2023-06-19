@@ -17,3 +17,5 @@ start.sh
 test_la.csv
 test_la.sh
 demo.sh
+test_local_repo.sh
+test_github_repo.sh
