@@ -48,7 +48,6 @@ def read_args():
     available_languages = ["Python", "Java", "C++", "C", "C#", "JavaScript", "TypeScript", "Ruby", "PHP", "Go", "Swift"]
     parser.add_argument('-main_language', type=str, default='', choices=available_languages, help='Main language of repo')
     
-    
     parser.add_argument('-commit', type=str, default='', help='commit link')
     parser.add_argument('-access_token', type=str, default='', help='user access token')
     
@@ -63,7 +62,6 @@ def read_args():
 
     return parser
 
-# sourcery skip: raise-specific-error
 if __name__ == '__main__':
     params = read_args().parse_args()
 
@@ -81,8 +79,7 @@ if __name__ == '__main__':
         "id": "main-" + str(int(time.time())),
         'ensemble': params.ensemble,
         "deep_models": params.deep,
-        "traditional_models": params.traditional,
-        "number_models": len(params.deep) + len(params.traditional)
+        "traditional_models": params.traditional
     }
     
     if params.commit == '' and params.repo == '':
