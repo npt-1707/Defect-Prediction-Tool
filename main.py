@@ -1,5 +1,4 @@
 from urllib.parse import urlparse
-import pandas as pd
 import json
 import argparse
 import time
