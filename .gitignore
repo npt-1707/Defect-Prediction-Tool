@@ -17,3 +17,7 @@ start.sh
 test_la.csv
 test_la.sh
 demo.sh
+main/auto_extract/__pycache__
+input_output_handling/auto_extract/__pycache__
+test_github_repo.sh
+test_local_repo.sh
