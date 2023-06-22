@@ -20,6 +20,9 @@ demo.sh
 main/auto_extract/__pycache__
 input_output_handling/auto_extract/__pycache__
 test_github_repo.sh
-test_local_repo.sh
 main/auto_extract/utils/__pycache__
+test_local_repo.sh
+auto_extract/__pycache__
+auto_extract/utils/__pycache__
 input_output_handling/auto_extract/utils/__pycache__
+main/auto_extract/__pycache__

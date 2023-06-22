@@ -1,8 +1,11 @@
 from flask import Flask, request
 import requests, json
-from utils import extract_info_from_commit_link
+from github import Github
+import os
+from utils import extract_owner_and_repo, commit_to_info
 from preprocess.deepjit.preprocess import deepjit_preprocess
 from preprocess.cc2vec.preprocess import cc2vec_preprocess
+from auto_extract.RepositoryExtractor import RepositoryExtractor
 
 # Dictionary mapping model_name and model_preprocessing
 preprocess_data = {
@@ -30,7 +33,7 @@ def template():
         request {
             "id": string,
             "commit_info": dict,
-            "features": .csv file,
+            "features": dict,
             "link_commit": string,
             "access_token": string,
             "ensemble": boolean,
@@ -39,15 +42,30 @@ def template():
             "number_models": int
         }
     '''
-    ## Handling feature if any
-    if 'features' in request_data:
-        features = request_data["features"]
+
     ## Handling link_commit if any
     if 'link_commit' in request_data:
-        commit_info = extract_info_from_commit_link(request_data['link_commit'], request_data['access_token'])
-    ## Handling commit_info if any
+        owner, name, commit_hash = extract_owner_and_repo(request_data['link_commit'])
+        g = Github(request_data['access_token'])
+        current_path = os.getcwd()
+        extractor = RepositoryExtractor(g, owner, name, current_path)
+        if len(request_data["traditional_models"]) > 0:
+            extractor.get_repo_commits_info(main_language_only=True)
+            extractor.extract_repo_k_features()
+            features = extractor.features[commit_hash]
+            if len(request_data["deep_models"]) > 0:
+                commit = extractor.commits[commit_hash]
+                commit_info = commit_to_info(commit)
+        else:
+            commit = extractor.get_commit_info(commit_hash, extractor.language)
+            commit_info = commit_to_info(commit)
+            
+        os.chdir(current_path)
+    ## Handling commit_info & features if any
     if 'commit_info' in request_data:
         commit_info = request_data["commit_info"]
+    if 'features' in request_data:    
+        features = request_data["features"]
 
     # Data Preprocessing
     ## Must return a model_request like below
