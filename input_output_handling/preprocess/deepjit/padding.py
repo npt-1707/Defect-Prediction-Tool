@@ -47,7 +47,6 @@ def mapping_dict_msg(pad_msg, dict_msg):
     return np.array(
         [np.array([dict_msg[w.lower()] if w.lower() in dict_msg.keys() else dict_msg['<NULL>'] for w in line.split(' ')]) for line in pad_msg])
 
-
 def mapping_dict_code(pad_code, dict_code):
     new_pad = [
         np.array([np.array([dict_code[w.lower()] if w.lower() in dict_code else dict_code['<NULL>'] for w in l.split()]) for l in ml])
