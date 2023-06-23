@@ -170,11 +170,9 @@ def cc2vec_padding_commit_code(data, max_file, max_line, max_length):
 
 def cc2vec_clean_and_reformat_code(data):
     # remove empty lines in code; divide code to two part: added_code and removed_code
-    print(data)
     new_diff_added_code, new_diff_removed_code = [], []
     for diff in data:
         files = []
-        print(diff)
         for file in diff['code_changes']:
             lines = file['added_code']
             new_lines = [line for line in lines if len(line.strip()) > 0]

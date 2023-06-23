@@ -29,9 +29,9 @@ def template():
             model = pickle.load(f) 
         predict.append(model.predict_proba(input)[:, 1][0])
     
-    if app.debug:
-        print(input)
-        print(predict)
+    # if app.debug:
+    #     print(input)
+    #     print(predict)
     # Create response like form below:
     '''
         {

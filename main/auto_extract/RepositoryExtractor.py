@@ -134,8 +134,7 @@ class RepositoryExtractor:
 
     def get_repo_commits_info(self, main_language_only=False):
         if self.last_hash[0] == self.commit_ids[-1]:
-            print(self.last_hash, self.commit_ids[-1])
-            print("skip 1")
+            # print(self.last_hash, self.commit_ids[-1])
             return
         if main_language_only:
             languages = [self.language]
@@ -242,7 +241,6 @@ class RepositoryExtractor:
 
     def extract_repo_k_features(self):
         if self.last_hash[1] == self.last_hash[0] or self.last_hash[1] == self.commit_ids[-1]:
-            print("skip 2")
             return
         print("Extracting features ...")
         if self.last_hash[1] is not None:

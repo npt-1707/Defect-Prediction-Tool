@@ -15,9 +15,6 @@ def deepjit_preprocess(commit_info, params):
     pad_msg = padding_data(data=[commit_message], dictionary=dict_msg, params=params, type='msg')        
     pad_code = padding_data(data=[code], dictionary=dict_code, params=params, type='code')
 
-    print(pad_msg.shape)
-    print(pad_code.shape)
-
     # Using Pytorch Dataset and DataLoader
     code = {
         "code": pad_code.tolist(),
