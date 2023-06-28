@@ -110,6 +110,13 @@ def template():
         else:
             output[model] = -1
 
+    # If ensemble learning is True
+    if request_data['ensemble']:
+        result_list = list(output.values())
+        result_list = [x for x in result_list if x != -1]
+        ensemble_result = sum(result_list) / len(result_list)
+        output['emsemble_result'] = ensemble_result
+
     # Create response like form below:
     '''
         {
