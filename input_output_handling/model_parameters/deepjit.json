@@ -8,6 +8,5 @@
     "hidden_size": 512,
     "dropout_rate": 0.5,
     "batch_size": 1,
-    "device": "cpu",
     "pretrained_model": "pretrained_models/best_model.pt"
 }

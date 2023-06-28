@@ -57,6 +57,8 @@ def read_args():
     parser.add_argument('-deep', nargs='+', type=str, default=[], choices=available_deep_models, help='list of deep learning models')
     parser.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
 
+    parser.add_argument('-device', type=str, default='cpu', help='Ex: cpu, cuda, cuda:1')
+
     parser.add_argument('-debug', action='store_true', help='allow debug print')
 
     return parser
@@ -78,7 +80,8 @@ if __name__ == '__main__':
         "id": "main-" + str(int(time.time())),
         'ensemble': params.ensemble,
         "deep_models": params.deep,
-        "traditional_models": params.traditional
+        "traditional_models": params.traditional,
+        "device": params.device
     }
     
     if params.commit == '' and params.repo == '':

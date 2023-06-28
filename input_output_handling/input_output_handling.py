@@ -85,7 +85,8 @@ def template():
     ## Preprocessing data for deep models
     for model in request_data['deep_models']:
         model_name_to_model_input[model] = {
-            'id': request_data['id']
+            'id': request_data['id'],
+            'device': request_data['device']
         }
         with open(f"model_parameters/{model}.json", 'r') as file:
             params = json.load(file)

@@ -11,7 +11,8 @@ def template():
         {
             "id": string,
             "parameters": dictionary,
-            "input": input_type
+            "input": input_type,
+            "device": string
         }
     '''
     request_data = request.get_json()
@@ -30,15 +31,15 @@ def template():
     params["class_num"] = 1
 
     # Create model and Load pretrain
-    model = DeepJIT(params).to(device=params["device"])
+    model = DeepJIT(params).to(device=request_data["device"])
     model.load_state_dict(torch.load(params["pretrained_model"]))
 
     # Forward
     model.eval()
     with torch.no_grad():
         # Extract data from DataLoader
-        code = torch.tensor(code_loader["code"], device=params["device"])
-        message = torch.tensor(code_loader["message"], device=params["device"])
+        code = torch.tensor(code_loader["code"], device=request_data["device"])
+        message = torch.tensor(code_loader["message"], device=request_data["device"])
 
         # Forward
         predict = model(message, code)

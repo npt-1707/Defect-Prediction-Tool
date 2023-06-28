@@ -120,7 +120,7 @@ class HierachicalRNN(nn.Module):
         self.fc2 = nn.Linear(2 * self.hidden_size, self.cls)
         self.sigmoid = nn.Sigmoid()
 
-    def forward_code(self, x, hid_state):
+    def forward_code(self, x, hid_state, device='cpu'):
         hid_state_hunk, hid_state_sent, hid_state_word = hid_state
         n_batch, n_hunk, n_line = x.shape[0], x.shape[1], x.shape[2]
         # i: hunk; j: line; k: batch
@@ -130,18 +130,18 @@ class HierachicalRNN(nn.Module):
             for j in range(n_line):
                 words = [x[k][i][j] for k in range(n_batch)]
                 words = np.array(words)
-                sent, state_word = self.wordRNN(torch.tensor(words, device='cpu').view(-1, self.batch_size), hid_state_word)
+                sent, state_word = self.wordRNN(torch.tensor(words, device=device).view(-1, self.batch_size), hid_state_word)
                 sents = sent if sents is None else torch.cat((sents, sent), 0)
             hunk, state_sent = self.sentRNN(sents, hid_state_sent)
             hunks = hunk if hunks is None else torch.cat((hunks, hunk), 0)
         hunks = torch.mean(hunks, dim=0)  # hunk features
         return hunks
 
-    def forward(self, added_code, removed_code, hid_state_hunk, hid_state_sent, hid_state_word):
+    def forward(self, added_code, removed_code, hid_state_hunk, hid_state_sent, hid_state_word, device='cpu'):
         hid_state = (hid_state_hunk, hid_state_sent, hid_state_word)
 
-        x_added_code = self.forward_code(x=added_code, hid_state=hid_state)
-        x_removed_code = self.forward_code(x=removed_code, hid_state=hid_state)
+        x_added_code = self.forward_code(x=added_code, hid_state=hid_state, device=device)
+        x_removed_code = self.forward_code(x=removed_code, hid_state=hid_state, device=device)
 
         x_added_code = x_added_code.view(self.batch_size, self.embed_size)
         x_removed_code = x_removed_code.view(self.batch_size, self.embed_size)
@@ -189,14 +189,14 @@ class HierachicalRNN(nn.Module):
         V_output = self.V_nn_tensor(code)
         return F.relu(W_output + V_output)
 
-    def init_hidden_hunk(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
+    def init_hidden_hunk(self, device='cpu'):
+        return torch.zeros((2, self.batch_size, self.hidden_size), device=device)
 
-    def init_hidden_sent(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
+    def init_hidden_sent(self, device):
+        return torch.zeros((2, self.batch_size, self.hidden_size), device=device)
 
-    def init_hidden_word(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
+    def init_hidden_word(self, device):
+        return torch.zeros((2, self.batch_size, self.hidden_size), device=device)
     
 class DeepJITExtended(nn.Module):
     def __init__(self, params):
