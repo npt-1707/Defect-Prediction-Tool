@@ -108,7 +108,7 @@ def template():
             #     print(model_response)
             output[model] = model_response['output']
         else:
-            raise Exception('Error:', model_response.status_code)
+            output[model] = -1
 
     # Create response like form below:
     '''
