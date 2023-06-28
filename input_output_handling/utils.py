@@ -43,11 +43,34 @@ def commit_to_info(commit):
             'num_added_lines_in_main_language': num_added_lines,
         }
 
+def split_sentence(sentence):
+    sentence = sentence.replace('.', ' . ').replace('_', ' ').replace('@', ' @ ')\
+        .replace('-', ' - ').replace('~', ' ~ ').replace('%', ' % ').replace('^', ' ^ ')\
+        .replace('&', ' & ').replace('*', ' * ').replace('(', ' ( ').replace(')', ' ) ')\
+        .replace('+', ' + ').replace('=', ' = ').replace('{', ' { ').replace('}', ' } ')\
+        .replace('|', ' | ').replace('\\', ' \ ').replace('[', ' [ ').replace(']', ' ] ')\
+        .replace(':', ' : ').replace(';', ' ; ').replace(',', ' , ').replace('<', ' < ')\
+        .replace('>', ' > ').replace('?', ' ? ').replace('/', ' / ')
+    sentence = ' '.join(sentence.split())
+    return sentence
+
 def hunks_to_code(file_levels: list) -> str:
     code = []
     for file_level in file_levels:
         for hunk in file_level['code_changes']:
-            code.append(hunk['added_code'])
-            code.append(hunk['removed_code'])
+            added_code = hunk['added_code']
+            removed_code = hunk['removed_code']
+
+            added_code = added_code.strip()
+            removed_code = removed_code.strip()
+
+            added_code = ' '.join(split_sentence(added_code).split())
+            removed_code = ' '.join(split_sentence(removed_code).split())
+
+            added_code = ' '.join(added_code.split(' '))
+            removed_code = ' '.join(removed_code.split(' '))
+
+            code.append(added_code)
+            code.append(removed_code)
 
     return code
