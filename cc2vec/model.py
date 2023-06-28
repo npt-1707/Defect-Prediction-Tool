@@ -130,7 +130,7 @@ class HierachicalRNN(nn.Module):
             for j in range(n_line):
                 words = [x[k][i][j] for k in range(n_batch)]
                 words = np.array(words)
-                sent, state_word = self.wordRNN(torch.tensor(words, device='cuda').view(-1, self.batch_size), hid_state_word)
+                sent, state_word = self.wordRNN(torch.tensor(words, device='cpu').view(-1, self.batch_size), hid_state_word)
                 sents = sent if sents is None else torch.cat((sents, sent), 0)
             hunk, state_sent = self.sentRNN(sents, hid_state_sent)
             hunks = hunk if hunks is None else torch.cat((hunks, hunk), 0)
@@ -190,13 +190,13 @@ class HierachicalRNN(nn.Module):
         return F.relu(W_output + V_output)
 
     def init_hidden_hunk(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
 
     def init_hidden_sent(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
 
     def init_hidden_word(self):
-        return Variable(torch.zeros(2, self.batch_size, self.hidden_size)).cuda()
+        return Variable(torch.zeros(2, self.batch_size, self.hidden_size))
     
 class DeepJITExtended(nn.Module):
     def __init__(self, params):

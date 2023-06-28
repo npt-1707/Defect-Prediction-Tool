@@ -12,7 +12,7 @@
     "l2_reg_lambda": 1e-5,
     "dropout_rate": 0.5,
     "batch_size": 1,
-    "device": "cuda",
+    "device": "cpu",
     "pretrained_cc2vec": "pretrained_models/cc2vec_best_model.pt",
     "pretrained_deepjit": "pretrained_models/deepjit_best_model.pt"
 }
