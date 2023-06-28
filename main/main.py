@@ -121,8 +121,20 @@ if __name__ == '__main__':
     if params.debug:
         print("Request: ", json.dumps(request, indent=4))
 
+    # Start the timer
+    start_time = time.time()
+
     response = requests.post('http://localhost:5000/api/input_output', json=request)
     if response.status_code == 200:
         print("Response: ", json.dumps(response.json(), indent=4))
     else:
         raise Exception(response.status_code)
+    
+    # End the timer
+    end_time = time.time()
+
+    # Calculate the execution time
+    execution_time = end_time - start_time
+
+    # Print the result
+    print(f"The code took {execution_time:.2f} seconds to run.")
