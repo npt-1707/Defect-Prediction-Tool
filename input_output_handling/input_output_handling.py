@@ -115,8 +115,11 @@ def template():
     if request_data['ensemble']:
         result_list = list(output.values())
         result_list = [x for x in result_list if x != -1]
-        ensemble_result = sum(result_list) / len(result_list)
-        output['emsemble_result'] = ensemble_result
+        if len(result_list) >= 2:
+            ensemble_result = sum(result_list) / len(result_list)
+            output['emsemble_result'] = ensemble_result
+        else:
+            output['emsemble_result'] = "Can not ensemble on 1 results."
 
     # Create response like form below:
     '''
