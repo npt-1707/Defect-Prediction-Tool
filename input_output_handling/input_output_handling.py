@@ -10,7 +10,8 @@ from auto_extract.RepositoryExtractor import RepositoryExtractor
 # Dictionary mapping model_name and model_preprocessing
 preprocess_data = {
     'deepjit': deepjit_preprocess,
-    'cc2vec': cc2vec_preprocess
+    'cc2vec': cc2vec_preprocess,
+    'simcom': deepjit_preprocess
 }
 
 api_lists = {
@@ -91,7 +92,12 @@ def template():
         with open(f"model_parameters/{model}.json", 'r') as file:
             params = json.load(file)
         input = preprocess_data[model](commit_info, params)
-        model_name_to_model_input[model]['input'] = input
+        if model != 'simcom':
+            model_name_to_model_input[model]['input'] = input
+        else:
+            model_name_to_model_input[model]['input'] = {}
+            model_name_to_model_input[model]['input']['commit'] = input
+            model_name_to_model_input[model]['input']['feature'] = features
         model_name_to_model_input[model]['parameters'] = params
 
     # for model in request_data['deep_models']:
