@@ -20,8 +20,8 @@ def template():
     #     print(request_data["parameters"])
 
     #----------- Sim ----------------------
-    features = request_data["input"]["features"]
-    features = np.array(features.values()).reshape(1, -1)
+    features = request_data["input"]["feature"]
+    features = np.array(list(features.values())).reshape(1, -1)
     sim_models_path = os.path.join(os.getcwd(), "sim_model")
     files = os.listdir(sim_models_path)
     sim_predict = []
