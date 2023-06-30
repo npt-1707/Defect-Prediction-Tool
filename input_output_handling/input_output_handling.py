@@ -2,6 +2,8 @@ from flask import Flask, request
 import requests, json
 from github import Github
 import os
+import asyncio
+import aiohttp
 from utils import extract_owner_and_repo, commit_to_info
 from preprocess.deepjit.preprocess import deepjit_preprocess
 from preprocess.cc2vec.preprocess import cc2vec_preprocess
@@ -21,6 +23,32 @@ api_lists = {
 }
 
 app = Flask(__name__)
+
+async def send_request(session, model, send_message, api_url):
+    async with session.post(api_url, json=send_message) as response:
+        if response.status == 200:
+            model_response = await response.json()
+            return model, model_response['output']
+        else:
+            return model, -1
+        
+async def send_requests(request_data, model_name_to_model_input):
+    output = {}
+    async with aiohttp.ClientSession() as session:
+        tasks = []
+        
+        for model in request_data["traditional_models"] + request_data["deep_models"]:
+            send_message = model_name_to_model_input[model]
+            api_url = api_lists[model]
+            task = asyncio.ensure_future(send_request(session, model, send_message, api_url))
+            tasks.append(task)
+        
+        responses = await asyncio.gather(*tasks)
+        
+        for model, model_response in responses:
+            output[model] = model_response
+        
+        return output
 
 @app.route('/api/input_output', methods=['POST'])
 def template():
@@ -105,17 +133,7 @@ def template():
     #     print(model_name_to_model_input[model]['parameters'])
 
     # Forward to model
-    output = {}
-    for model in request_data["traditional_models"] + request_data["deep_models"]:
-        send_message = model_name_to_model_input[model]
-        model_response = requests.post(api_lists[model], json=send_message)
-        if model_response.status_code == 200:
-            model_response = model_response.json()
-            # if app.debug:
-            #     print(model_response)
-            output[model] = model_response['output']
-        else:
-            output[model] = -1
+    output = asyncio.run(send_requests(request_data, model_name_to_model_input))
 
     # If ensemble learning is True
     if request_data['ensemble']:
