@@ -50,7 +50,10 @@ def read_args():
     parser.add_argument('-commit', type=str, default='', help='commit link')
     parser.add_argument('-access_token', type=str, default='', help='user access token')
     
-    parser.add_argument('-ensemble', action='store_true', help='enable ensemble')
+    # parser.add_argument('-ensemble', action='store_true', help='enable ensemble')
+    available_ensemble = ['average', 'max', 'majority']
+    parser.add_argument('-ensemble', nargs='+', type=str, default=[], choices=available_ensemble, help='list of deep learning models')
+    parser.add_argument('-threshold', type=int, default=0.5, help='threshold')
 
     available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
     available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
@@ -79,6 +82,7 @@ if __name__ == '__main__':
     request = {
         "id": "main-" + str(int(time.time())),
         'ensemble': params.ensemble,
+        'threshold': params.threshold,
         "deep_models": params.deep,
         "traditional_models": params.traditional,
         "device": params.device

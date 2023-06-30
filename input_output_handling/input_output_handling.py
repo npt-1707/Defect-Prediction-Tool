@@ -19,7 +19,13 @@ preprocess_data = {
 api_lists = {
     'deepjit': "http://localhost:5001/api/deepjit",
     'cc2vec': "http://localhost:5002/api/cc2vec",
-    'lapredict': "http://localhost:8001/api/lapredict"
+    'lapredict': "http://localhost:5003/api/lapredict"
+}
+
+ensemble_methods = {
+    'average': lambda results: sum(results) / len(results),
+    'max': lambda results: 1 if 1 in results else 0,
+    'majority': lambda results: 1 if results.count(1) > results.count(0) else 0
 }
 
 app = Flask(__name__)
@@ -133,15 +139,32 @@ def template():
     #     print(model_name_to_model_input[model]['parameters'])
 
     # Forward to model
+    ## Using for loop
+    # output = {}
+    # for model in request_data["traditional_models"] + request_data["deep_models"]:
+    #     send_message = model_name_to_model_input[model]
+    #     model_response = requests.post(api_lists[model], json=send_message)
+    #     if model_response.status_code == 200:
+    #         model_response = model_response.json()
+    #         # if app.debug:
+    #         #     print(model_response)
+    #         output[model] = model_response['output']
+    #     else:
+    #         output[model] = -1
+
+    ## Using async
     output = asyncio.run(send_requests(request_data, model_name_to_model_input))
 
     # If ensemble learning is True
-    if request_data['ensemble']:
-        result_list = list(output.values())
-        result_list = [x for x in result_list if x != -1]
-        if len(result_list) >= 2:
-            ensemble_result = sum(result_list) / len(result_list)
-            output['emsemble_result'] = ensemble_result
+    if len(request_data['ensemble']) >= 0:
+        results = list(output.values())
+        results = [x for x in results if x != -1]
+        if len(results) >= 2:
+            output['emsemble_result'] = {}
+            for method in request_data['ensemble']:
+                if method != 'average':
+                    results = [1 if prob >= request_data['threshold'] else 0 for prob in results]
+                output['emsemble_result'][method] = ensemble_methods[method](results)
         else:
             output['emsemble_result'] = "Can not ensemble on 1 results."
 
