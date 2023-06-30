@@ -33,16 +33,6 @@ def extract_diff(diff):
         list_file_changes.append(file)
     return list_file_changes, num_added_lines
 
-def commit_to_info(commit):
-    list_file_changes, num_added_lines = extract_diff(commit["diff"])
-    
-    return {
-            'commit_hash': commit["commit_id"],
-            'commit_message': commit["commit_msg"],
-            'main_language_file_changes': list_file_changes,
-            'num_added_lines_in_main_language': num_added_lines,
-        }
-
 def split_sentence(sentence):
     sentence = sentence.replace('.', ' . ').replace('_', ' ').replace('@', ' @ ')\
         .replace('-', ' - ').replace('~', ' ~ ').replace('%', ' % ').replace('^', ' ^ ')\
@@ -53,6 +43,16 @@ def split_sentence(sentence):
         .replace('>', ' > ').replace('?', ' ? ').replace('/', ' / ')
     sentence = ' '.join(sentence.split())
     return sentence
+
+def commit_to_info(commit):
+    list_file_changes, num_added_lines = extract_diff(commit["diff"])
+    
+    return {
+            'commit_hash': commit["commit_id"],
+            'commit_message': commit['commit_msg'],
+            'main_language_file_changes': list_file_changes,
+            'num_added_lines_in_main_language': num_added_lines,
+        }
 
 def hunks_to_code(file_levels: list) -> str:
     code = []

@@ -1,10 +1,13 @@
 import pickle
 from preprocess.deepjit.padding import padding_data
-from utils import hunks_to_code
+from utils import hunks_to_code, split_sentence
 
 def deepjit_preprocess(commit_info, params):
     # Extract commit message
-    commit_message = commit_info['commit_message']
+    commit_message = commit_info['commit_message'].strip()
+    commit_message = split_sentence(commit_message)
+    commit_message = ' '.join(commit_message.split(' ')).lower()
+    
     commit = commit_info['main_language_file_changes']
 
     code = hunks_to_code(commit)
