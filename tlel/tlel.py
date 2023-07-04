@@ -2,6 +2,7 @@ from flask import Flask, request
 import pickle
 import pandas as pd
 import os
+from TLEL import TLEL
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ def template():
     request_data = request.get_json()
 
     # get input
-    features = ["ns", "nd", "nf", "entropy", "la", "ld", "lt", "fix", "ndev", "age", "nuc", "exp", "rexp", "sexp"]
+    features = ["ns", "nd", "nf", "entrophy", "la", "ld", "lt", "fix", "ndev", "age", "nuc", "exp", "rexp", "sexp"]
     input = request_data["input"]
     input = {key:[input[key]] for key in features}
     input = pd.DataFrame(input)

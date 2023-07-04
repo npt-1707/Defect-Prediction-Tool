@@ -20,7 +20,7 @@ def template():
     #     print(request_data["parameters"])
 
     #----------- Sim ----------------------
-    features = ["ns", "nd", "nf", "entropy", "la", "ld", "lt", "fix", "ndev", "age", "nuc", "exp", "rexp", "sexp"]
+    features = ["ns", "nd", "nf", "entrophy", "la", "ld", "lt", "fix", "ndev", "age", "nuc", "exp", "rexp", "sexp"]
     input = request_data["input"]["feature"]
     input = {key:[input[key]] for key in features}
     input = pd.DataFrame(input)
