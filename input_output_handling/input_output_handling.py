@@ -19,7 +19,8 @@ preprocess_data = {
 api_lists = {
     'deepjit': "http://localhost:5001/api/deepjit",
     'cc2vec': "http://localhost:5002/api/cc2vec",
-    'lapredict': "http://localhost:5003/api/lapredict"
+    'lapredict': "http://localhost:5003/api/lapredict",
+    'simcom': "http://localhost:5004/api/simcom"
 }
 
 ensemble_methods = {
