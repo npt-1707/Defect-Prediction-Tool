@@ -1,6 +1,6 @@
 from flask import Flask, request
 from model import DeepJIT
-import json, torch, os, pickle, numpy as np
+import json, torch, os, pickle, numpy as np, pandas as pd
 
 app = Flask(__name__)
 
@@ -20,15 +20,17 @@ def template():
     #     print(request_data["parameters"])
 
     #----------- Sim ----------------------
-    features = request_data["input"]["feature"]
-    features = np.array(list(features.values())).reshape(1, -1)
+    features = ["ns", "nd", "nf", "entropy", "la", "ld", "lt", "fix", "ndev", "age", "nuc", "exp", "rexp", "sexp"]
+    input = request_data["input"]["feature"]
+    input = {key:[input[key]] for key in features}
+    input = pd.DataFrame(input)
     sim_models_path = os.path.join(os.getcwd(), "sim_model")
     files = os.listdir(sim_models_path)
     sim_predict = []
     for file in files:
         with open(os.path.join(sim_models_path, file), "rb") as f:
             model = pickle.load(f)
-        sim_predict.append(model.predict_proba(features)[:, 1][0])
+        sim_predict.append(model.predict_proba(input)[:, 1][0])
     sim_predict = np.mean(sim_predict)
     #--------------------------------------------
 
