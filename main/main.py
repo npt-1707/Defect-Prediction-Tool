@@ -67,6 +67,9 @@ def read_args():
     return parser
 
 if __name__ == '__main__':
+    # Start the timer
+    start_time = time.time()
+    
     params = read_args().parse_args()
 
     # if params.debug:
@@ -127,9 +130,6 @@ if __name__ == '__main__':
                 
     if params.debug:
         print("Request: ", json.dumps(request, indent=4))
-
-    # Start the timer
-    start_time = time.time()
 
     response = requests.post('http://localhost:5000/api/input_output', json=request)
     if response.status_code == 200:
