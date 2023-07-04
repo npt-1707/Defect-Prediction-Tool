@@ -56,7 +56,7 @@ def read_args():
     parser.add_argument('-threshold', type=int, default=0.5, help='threshold')
 
     available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
-    available_traditional_models = ['lapredict', 'earl', 'tler', 'jitline']
+    available_traditional_models = ['lapredict', 'earl', 'tlel', 'jitline']
     parser.add_argument('-deep', nargs='+', type=str, default=[], choices=available_deep_models, help='list of deep learning models')
     parser.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
 
@@ -95,10 +95,8 @@ if __name__ == '__main__':
         raise Exception("-commit, -repo, atleast one of these is required")
 
     if params.commit != '':
-        if len(params.deep) == 0:
-            raise Exception(f'Atleast 1 deep learning model is required')
-        if params.access_token == '':
-            raise Exception(f'Github access token is required')
+        # if params.access_token == '':
+        #     raise Exception(f'Github access token is required')
         parsed_url = urlparse(params.commit)
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
             # if params.debug:

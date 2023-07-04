@@ -20,7 +20,8 @@ api_lists = {
     'deepjit': "http://localhost:5001/api/deepjit",
     'cc2vec': "http://localhost:5002/api/cc2vec",
     'lapredict': "http://localhost:5003/api/lapredict",
-    'simcom': "http://localhost:5004/api/simcom"
+    'simcom': "http://localhost:5004/api/simcom",
+    'tlel': "http://localhost:5005/api/tlel"
 }
 
 ensemble_methods = {
