@@ -5,7 +5,7 @@ import os
 
 app = Flask(__name__)
 
-@app.route('/api/lapredict', methods=['POST'])
+@app.route('/api/tlel', methods=['POST'])
 def template():
     # Get request_data from main.py
     '''
@@ -17,7 +17,7 @@ def template():
     request_data = request.get_json()
 
     # get input
-    features = ["la"]
+    features = ["ns", "nd", "nf", "entropy", "la", "ld", "lt", "fix", "ndev", "age", "nuc", "exp", "rexp", "sexp"]
     input = request_data["input"]
     input = {key:[input[key]] for key in features}
     input = pd.DataFrame(input)
@@ -47,4 +47,4 @@ def template():
     }
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5003)
+    app.run(debug=True, host="0.0.0.0", port=5006)
