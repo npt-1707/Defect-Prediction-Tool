@@ -158,7 +158,7 @@ def template():
     output = asyncio.run(send_requests(request_data, model_name_to_model_input))
 
     # If ensemble learning is True
-    if len(request_data['ensemble']) >= 0:
+    if len(request_data['ensemble']) > 0:
         results = list(output.values())
         results = [x for x in results if x != -1]
         if len(results) >= 2:
