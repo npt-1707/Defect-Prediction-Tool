@@ -131,7 +131,12 @@ if __name__ == '__main__':
                 request['commit_info'] = commit_to_info(commit)
                 
     if params.debug:
-        print("Request: ", json.dumps(request, indent=4))
+        # Create a copy of the dictionary
+        dict_without_token = request.copy()
+
+        # Remove the "access_token" key from the copy
+        dict_without_token.pop("access_token", None)
+        print("Request: ", json.dumps(dict_without_token, indent=4))
 
     response = requests.post('http://localhost:5000/api/input_output', json=request)
     if response.status_code == 200:
