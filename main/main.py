@@ -102,7 +102,11 @@ if __name__ == '__main__':
             # if params.debug:
             #     print(f'{params.commit} is a GitHub commit link')
             request['link_commit'] = params.commit
-            request['access_token'] = params.access_token
+            if not os.path.exists("github_access_token.txt"):
+                raise Exception(f'github_access_token.txt not found. Please create one and put your GitHub access token in it')
+            else:
+                with open("github_access_token.txt", "r") as f:
+                    request['access_token'] = f.read().strip()
         else:
             raise Exception(f'{params.commit} not a GitHub commit link')
 
