@@ -32,7 +32,7 @@ def template():
 
     # Create model and Load pretrain
     model = DeepJIT(params).to(device=request_data["device"])
-    model.load_state_dict(torch.load(params["pretrained_model"]))
+    model.load_state_dict(torch.load(params["pretrained_model"], map_location=request_data["device"]))
 
     # Forward
     model.eval()

@@ -33,7 +33,7 @@ def template():
     params["deepjit_class_num"] = 1
 
     cc2vec = HierachicalRNN(params).to(device=request_data["device"])
-    cc2vec.load_state_dict(torch.load(params["pretrained_cc2vec"]))
+    cc2vec.load_state_dict(torch.load(params["pretrained_cc2vec"], map_location=request_data["device"]))
     cc2vec.eval()
     with torch.no_grad():
         # Extract data from DataLoader
@@ -49,7 +49,7 @@ def template():
     params["embedding_feature"] = feature.shape[1]
 
     deepjit = DeepJITExtended(params).to(device=request_data["device"])
-    deepjit.load_state_dict(torch.load(params["pretrained_deepjit"]))
+    deepjit.load_state_dict(torch.load(params["pretrained_deepjit"], map_location=request_data["device"]))
     deepjit.eval()
     with torch.no_grad():
         code = torch.tensor(code_loader["code"], device=request_data["device"])
