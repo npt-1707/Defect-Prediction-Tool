@@ -7,3 +7,6 @@ test_local_repo.sh
 dictionary
 save
 github_access_token.txt
+deepjit_torchserve
+.vscode
+defectguard
