@@ -4,7 +4,7 @@ from github import Github
 import os
 import asyncio
 import aiohttp
-from utils import extract_owner_and_repo, commit_to_info
+from utils import extract_owner_and_repo, commit_to_info, commit_to_code_change
 from preprocess.deepjit.preprocess import deepjit_preprocess
 from preprocess.cc2vec.preprocess import cc2vec_preprocess
 from auto_extract.RepositoryExtractor import RepositoryExtractor
@@ -21,7 +21,8 @@ api_lists = {
     'cc2vec': "http://localhost:5002/api/cc2vec",
     'lapredict': "http://localhost:5003/api/lapredict",
     'simcom': "http://localhost:5004/api/simcom",
-    'tlel': "http://localhost:5005/api/tlel"
+    'tlel': "http://localhost:5005/api/tlel",
+    "jitline": "http://localhost:5006/api/jitline"
 }
 
 ensemble_methods = {
@@ -62,8 +63,8 @@ async def send_requests(request_data, model_name_to_model_input):
 def template():
     # Get request_data from main.py 
     request_data = request.get_json()
-    # if app.debug:
-    #     print(request_data)
+    if app.debug:
+        print(request_data)
 
     #----- Handling request -------------------#
     '''
@@ -86,21 +87,27 @@ def template():
         g = Github(request_data['access_token'])
         current_path = os.getcwd()
         extractor = RepositoryExtractor(g, owner, name, current_path)
-        if len(request_data["traditional_models"]) > 0:
-            extractor.get_repo_commits_info(main_language_only=True)
-            extractor.extract_repo_k_features()
-            features = extractor.features[commit_hash]
-            if len(request_data["deep_models"]) > 0:
-                commit = extractor.commits[commit_hash]
-                commit_info = commit_to_info(commit)
-        else:
-            commit = extractor.get_commit_info(commit_hash, extractor.language)
-            commit_info = commit_to_info(commit)
+        # if len(request_data["traditional_models"]) > 0:
+        #     extractor.get_repo_commits_info(main_language_only=True)
+        #     extractor.extract_repo_k_features()
+        #     features = extractor.features[commit_hash]
+        #     if len(request_data["deep_models"]) > 0:
+        #         commit = extractor.commits[commit_hash]
+        #         commit_info = commit_to_info(commit)
+        # else:
+        #     commit = extractor.get_commit_info(commit_hash, extractor.language)
+        #     commit_info = commit_to_info(commit)
+        extractor.get_repo_commits_info(main_language_only=True)
+        extractor.extract_repo_k_features()
+        features = extractor.features[commit_hash]
+        commit = extractor.commits[commit_hash]
+        commit_info = commit_to_info(commit)
             
         os.chdir(current_path)
     ## Handling commit_info & features if any
     if 'commit_info' in request_data:
-        commit_info = request_data["commit_info"]
+        commit = request_data["commit_info"]
+        commit_info = commit_to_info(commit)
     if 'features' in request_data:    
         features = request_data["features"]
 
@@ -119,6 +126,11 @@ def template():
             'id': request_data['id'],
             "input": features
         }
+        if model == "jitline":
+            model_name_to_model_input[model]['input'] = {
+                "feature": features,
+                "commit": commit_to_code_change(commit)
+            }
     ## Preprocessing data for deep models
     for model in request_data['deep_models']:
         model_name_to_model_input[model] = {

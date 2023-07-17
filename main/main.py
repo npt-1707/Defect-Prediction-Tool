@@ -6,38 +6,38 @@ import os
 import requests
 from auto_extract.RepositoryExtractor import RepositoryExtractor
 
-def extract_diff(diff):
-    num_added_lines = 0
-    list_file_changes = []
-    for file_elem in list(diff.items()):
-        file_path = file_elem[0]
-        file_val = file_elem[1]
+# def extract_diff(diff):
+#     num_added_lines = 0
+#     list_file_changes = []
+#     for file_elem in list(diff.items()):
+#         file_path = file_elem[0]
+#         file_val = file_elem[1]
             
-        file = {"file_name": file_path, "code_changes":[]}
-        for ab in file_val["content"]:
-            if "ab" in ab:
-                continue
-            hunk = {"added_code":[], "removed_code":[]}
-            if "a" in ab:
-                hunk["removed_code"] += [line.strip() for line in ab["a"]]
-            if "b" in ab:
-                hunk["added_code"] += [line.strip() for line in ab["b"]]
-                num_added_lines += len(ab["b"])
-            hunk["added_code"] = "\n".join(hunk["added_code"])
-            hunk["removed_code"] = "\n".join(hunk["removed_code"])
-            file["code_changes"].append(hunk)
-        list_file_changes.append(file)
-    return list_file_changes, num_added_lines
+#         file = {"file_name": file_path, "code_changes":[]}
+#         for ab in file_val["content"]:
+#             if "ab" in ab:
+#                 continue
+#             hunk = {"added_code":[], "removed_code":[]}
+#             if "a" in ab:
+#                 hunk["removed_code"] += [line.strip() for line in ab["a"]]
+#             if "b" in ab:
+#                 hunk["added_code"] += [line.strip() for line in ab["b"]]
+#                 num_added_lines += len(ab["b"])
+#             hunk["added_code"] = "\n".join(hunk["added_code"])
+#             hunk["removed_code"] = "\n".join(hunk["removed_code"])
+#             file["code_changes"].append(hunk)
+#         list_file_changes.append(file)
+#     return list_file_changes, num_added_lines
 
-def commit_to_info(commit):
-    list_file_changes, num_added_lines = extract_diff(commit["diff"])
+# def commit_to_info(commit):
+#     list_file_changes, num_added_lines = extract_diff(commit["diff"])
     
-    return {
-            'commit_hash': commit["commit_id"],
-            'commit_message': commit["commit_msg"],
-            'main_language_file_changes': list_file_changes,
-            'num_added_lines_in_main_language': num_added_lines,
-        }
+#     return {
+#             'commit_hash': commit["commit_id"],
+#             'commit_message': commit["commit_msg"],
+#             'main_language_file_changes': list_file_changes,
+#             'num_added_lines_in_main_language': num_added_lines,
+#         }
 
 def read_args():
     parser = argparse.ArgumentParser()
@@ -118,17 +118,21 @@ if __name__ == '__main__':
             raise Exception(f"Repository's main language is required")
         current_dir = os.getcwd()
         extractor = RepositoryExtractor(params.repo, current_dir, params.main_language)
-        if len(params.traditional) == 0:
-            commit = extractor.get_commit_info(params.commit_hash, [params.main_language])
-            request['commit_info'] = commit_to_info(commit)
-        else:
-            extractor.get_repo_commits_info(main_language_only=True)
-            extractor.extract_repo_k_features()
-            feature = extractor.features[params.commit_hash]
-            request["features"] = feature
-            if len(params.deep) > 0:
-                commit = extractor.commits[params.commit_hash]
-                request['commit_info'] = commit_to_info(commit)
+        # if len(params.traditional) == 0:
+        #     commit = extractor.get_commit_info(params.commit_hash, [params.main_language])
+        #     request['commit_info'] = commit_to_info(commit)
+        # else:
+        #     extractor.get_repo_commits_info(main_language_only=True)
+        #     extractor.extract_repo_k_features()
+        #     feature = extractor.features[params.commit_hash]
+        #     request["features"] = feature
+        #     if len(params.deep) > 0:
+        #         commit = extractor.commits[params.commit_hash]
+        #         request['commit_info'] = commit_to_info(commit)
+        extractor.get_repo_commits_info(main_language_only=True)
+        extractor.extract_repo_k_features()
+        request["features"] = extractor.features[params.commit_hash]
+        request['commit_info'] = extractor.commits[params.commit_hash]
                 
     if params.debug:
         # Create a copy of the dictionary
@@ -136,6 +140,7 @@ if __name__ == '__main__':
 
         # Remove the "access_token" key from the copy
         dict_without_token.pop("access_token", None)
+        dict_without_token.pop("commit_info", None)
         print("Request: ", json.dumps(dict_without_token, indent=4))
 
     response = requests.post('http://localhost:5000/api/input_output', json=request)
