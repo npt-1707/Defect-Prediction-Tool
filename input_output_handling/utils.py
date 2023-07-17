@@ -74,3 +74,25 @@ def hunks_to_code(file_levels: list) -> str:
             code.append(removed_code)
 
     return code
+
+def diff_to_code_change(diff):
+    list_hunks = []
+    for file_val in diff.values():
+        for ab in file_val["content"]:
+            if "ab" in ab:
+                continue
+            hunk = {"added_code":[], "removed_code":[]}
+            if "a" in ab:
+                hunk["removed_code"] += [line.strip() for line in ab["a"]]
+            if "b" in ab:
+                hunk["added_code"] += [line.strip() for line in ab["b"]]
+            list_hunks.append(hunk)
+    return list_hunks
+
+def commit_to_code_change(commit):
+    
+    return {
+        "commit id": [commit["commit_id"]],
+        "code change": [diff_to_code_change(commit["diff"])]
+    }
+    
