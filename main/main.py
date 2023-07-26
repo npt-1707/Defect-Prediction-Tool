@@ -143,7 +143,7 @@ if __name__ == '__main__':
         dict_without_token.pop("commit_info", None)
         print("Request: ", json.dumps(dict_without_token, indent=4))
 
-    response = requests.post('http://localhost:5000/api/input_output', json=request)
+    response = requests.post('http://35.78.205.195:5000/api/input_output', json=request)
     if response.status_code == 200:
         print("Response: ", json.dumps(response.json(), indent=4))
     else:
