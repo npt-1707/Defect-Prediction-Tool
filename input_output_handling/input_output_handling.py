@@ -19,7 +19,7 @@ preprocess_data = {
 api_lists = {
     'deepjit': "http://localhost:5001/api/deepjit",
     'cc2vec': "http://localhost:5002/api/cc2vec",
-    'lapredict': "http://localhost:5003/api/lapredict",
+    'lapredict': "http://defectguard-lapredict:5003/api/lapredict",
     'simcom': "http://localhost:5004/api/simcom",
     'tlel': "http://localhost:5005/api/tlel",
     "jitline": "http://localhost:5006/api/jitline"
