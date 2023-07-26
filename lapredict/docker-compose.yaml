@@ -1,0 +1,13 @@
+version: '3'
+services:
+  lapredict:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: manhlamabc/defectguard-lapredict
+    ports:
+      - "5003:5003"
+    environment:
+      - FLASK_ENV=production
+    volumes:
+      - .:/app
