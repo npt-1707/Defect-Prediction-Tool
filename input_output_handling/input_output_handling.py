@@ -177,14 +177,16 @@ def template():
             output['emsemble_result'] = {}
             for method in request_data['ensemble']:
                 if method != 'average':
-                    results = [1 if prob >= request_data['threshold'] else 0 for prob in results]
-                output['emsemble_result'][method] = ensemble_methods[method](results)
+                    preprocessed_results = [1 if prob >= request_data['threshold'] else 0 for prob in results]
+                else:
+                    preprocessed_results = results
+                output['emsemble_result'][method] = ensemble_methods[method](preprocessed_results)
         else:
             output['emsemble_result'] = "Can not ensemble on 1 results."
 
     # Create response like form below:
     '''
-        {
+        {`
             "id": string,
             "output": dictionary
         }
