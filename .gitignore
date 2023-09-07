@@ -9,8 +9,8 @@ save
 github_access_token.txt
 deepjit_torchserve
 .vscode
-defectguard
 torchserve
 deepjit.pt
 deepjit_extended.pt
 cc2vec.pt
+models
