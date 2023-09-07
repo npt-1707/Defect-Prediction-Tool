@@ -1,0 +1,5 @@
+numpy==1.24.1
+pandas==2.0.2
+PyGithub==1.58.1
+Requests==2.31.0
+tqdm==4.65.0
