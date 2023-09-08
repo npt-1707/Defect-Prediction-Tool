@@ -13,6 +13,9 @@ setup(
     packages=find_packages(),
     install_requires=['numpy', 'pandas', 'PyGithub', 'Requests', 'tqdm'],
     keywords=['python', 'defect', 'prediction', 'just-in-time', 'defect prediction'],
+    entry_points={
+        'console_scripts': ['defectguard=defectguard:main'],
+    },
     classifiers=[
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
