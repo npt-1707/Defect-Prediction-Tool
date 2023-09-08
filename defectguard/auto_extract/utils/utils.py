@@ -1,7 +1,7 @@
 import os
 import math
-from auto_extract.utils.line_parser import parse_lines
-from auto_extract.utils.aggregator import aggregator
+from .line_parser import parse_lines
+from .aggregator import aggregator
 import subprocess
 
 def exec_cmd(command):

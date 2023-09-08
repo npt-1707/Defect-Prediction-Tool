@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from github import Github
 from tqdm import tqdm
-from auto_extract.utils.utils import *
+from .utils.utils import *
 import pickle
 import datetime
 
