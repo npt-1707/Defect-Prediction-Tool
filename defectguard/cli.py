@@ -65,15 +65,23 @@ def main():
             raise Exception(f'Commit hash is required')
         if params.main_language == '':
             raise Exception(f"Repository's main language is required")
-        current_dir = os.getcwd()
-        extractor = RepositoryExtractor(params.repo, current_dir, params.main_language)
-        extractor.get_repo_commits_info(main_language_only=True)
-        extractor.extract_repo_k_features()
-        user_input["features"] = extractor.features[params.commit_hash]
-        user_input['commit_info'] = extractor.commits[params.commit_hash]
                 
     if params.debug:
         dict_without_token = user_input.copy()
         dict_without_token.pop("access_token", None)
         dict_without_token.pop("commit_info", None)
         print("User's input: ", json.dumps(dict_without_token, indent=4))
+
+    # Extract info from user's repo
+    ## current_dir = os.getcwd()
+    ## extractor = RepositoryExtractor(params.repo, current_dir, params.main_language)
+    ## extractor.get_repo_commits_info(main_language_only=True)
+    ## extractor.extract_repo_k_features()
+    ## user_input["features"] = extractor.features[params.commit_hash]
+    ## user_input['commit_info'] = extractor.commits[params.commit_hash]
+
+    # Load Preprocess
+
+    # Load Model
+
+    # Inference
