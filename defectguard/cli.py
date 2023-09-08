@@ -1,5 +1,5 @@
-import argparse
-import warnings
+import argparse, json, os, getpass
+from urllib.parse import urlparse
 
 def read_args():
     parser = argparse.ArgumentParser()
@@ -31,12 +31,41 @@ def read_args():
 def main():
     params = read_args().parse_args()
 
+    user_input = {
+        'ensemble': params.ensemble,
+        'threshold': params.threshold,
+        "deep_models": params.deep,
+        "traditional_models": params.traditional,
+        "device": params.device
+    }
+    
+    if params.commit == '' and params.repo == '':
+        raise Exception("-commit, -repo, atleast one of these is required")
+
+    if params.commit != '':
+        parsed_url = urlparse(params.commit)
+        if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
+            user_input['link_commit'] = params.commit
+            if not os.path.exists("github_access_token.txt"):
+                password = getpass.getpass("Enter your GitHub access token: ")
+                file_name = "github_access_token.txt"
+                with open(file_name, "w") as file:
+                    file.write(password)
+                print(f"GitHub access token has been saved to {file_name}")
+            else:
+                with open("github_access_token.txt", "r") as f:
+                    user_input['access_token'] = f.read().strip()
+        else:
+            raise Exception(f'{params.commit} not a GitHub commit link')
+
+    if params.repo != '':
+        if params.commit_hash == '':
+            raise Exception(f'Commit hash is required')
+        if params.main_language == '':
+            raise Exception(f"Repository's main language is required")
+                
     if params.debug:
-        print("Repo: ", params.repo)
-        print("Commit hash: ", params.commit_hash)
-        print("Commit link: ", params.commit)
-        print("Access token: ", params.access_token)
-        print("Feature:", params.feature)
-        print("Ensemble:", params.ensemble)
-        print("DL models:", params.deep)
-        print("ML models:", params.traditional)
+        dict_without_token = user_input.copy()
+        dict_without_token.pop("access_token", None)
+        dict_without_token.pop("commit_info", None)
+        print("User's input: ", json.dumps(dict_without_token, indent=4))
