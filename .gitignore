@@ -10,11 +10,9 @@ github_access_token.txt
 deepjit_torchserve
 .vscode
 torchserve
-deepjit.pt
-deepjit_extended.pt
-cc2vec.pt
-models
 dist
 build
 defectguard.egg-info
 publish.sh
+colab-385406-e848129cc804.json
+/models
