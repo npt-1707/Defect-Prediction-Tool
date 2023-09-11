@@ -11,7 +11,7 @@ setup(
     author_email="<mail@neuralnine.com>",
     description=DESCRIPTION,
     packages=find_packages(),
-    install_requires=['numpy', 'pandas', 'PyGithub', 'Requests', 'tqdm', 'scikit-learn', 'torch', 'imblearn', 'scipy'],
+    install_requires=['numpy', 'pandas', 'PyGithub', 'Requests', 'tqdm', 'scikit-learn', 'torch', 'imblearn', 'scipy', 'dvc'],
     keywords=['python', 'defect', 'prediction', 'just-in-time', 'defect prediction'],
     entry_points={
         'console_scripts': ['defectguard=defectguard:main'],
