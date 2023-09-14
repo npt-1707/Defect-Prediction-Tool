@@ -1,5 +1,4 @@
-from dvc.api import DVCFileSystem
-import os
+import os, subprocess
 
 def download(model_name, destination_path='models/'):
     # Check if the folder already exists locally
@@ -8,7 +7,12 @@ def download(model_name, destination_path='models/'):
         print(f"Folder '{model_name}' already exists locally at '{local_folder_path}'")
         return
 
-    fs = DVCFileSystem()
-    fs.get(local_folder_path, local_folder_path, recursive=True)
+    # Define the DVC command to pull the folder
+    dvc_pull_command = f"dvc pull {local_folder_path}"
 
-    print(f"Folder '{model_name}' downloaded to '{local_folder_path}'")
+    # Run the DVC pull command
+    try:
+        subprocess.check_call(dvc_pull_command, shell=True)
+        print("Folder pulled successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error pulling folder: {e}")
