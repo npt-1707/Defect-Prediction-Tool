@@ -4,7 +4,6 @@ Tic-tac-toe-Game-using-Network-Socket-APIs
 pretrained_models
 test_github_repo.sh
 test_local_repo.sh
-dictionary
 save
 github_access_token.txt
 deepjit_torchserve
