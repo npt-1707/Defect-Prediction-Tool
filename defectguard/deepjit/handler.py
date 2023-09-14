@@ -1,5 +1,4 @@
 from defectguard.BaseHandler import BaseHandler
-from defectguard.download import download
 import dvc.api
 from defectguard.config.config import CONFIG
 

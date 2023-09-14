@@ -3,9 +3,6 @@ from importlib.resources import files
 # Get the absolute path of the file
 absolute_path = str(files('config').joinpath('colab-385406-e848129cc804.json'))
 
-# Print the absolute path
-print("Absolute path:", absolute_path)
-
 CONFIG = {
     'remote': {
         'storage': {
