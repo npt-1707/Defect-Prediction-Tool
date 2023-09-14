@@ -1,0 +1,5 @@
+outs:
+- md5: 9eeca229006ddde2d859aac805f7308c
+  size: 26101183
+  hash: md5
+  path: within_openstack.pkl

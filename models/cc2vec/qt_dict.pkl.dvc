@@ -1,0 +1,5 @@
+outs:
+- md5: 157067ee8144361b7f182699efd3cd90
+  size: 21740251
+  hash: md5
+  path: qt_dict.pkl

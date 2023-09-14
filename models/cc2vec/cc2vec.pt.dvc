@@ -1,0 +1,5 @@
+outs:
+- md5: 63bb5519e8c7b041b43ecd70770c07dc
+  size: 188081344
+  hash: md5
+  path: cc2vec.pt

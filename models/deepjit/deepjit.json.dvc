@@ -1,0 +1,5 @@
+outs:
+- md5: a3cdc8a9399c99bb8a4693fb06bf6082
+  size: 283
+  hash: md5
+  path: deepjit.json

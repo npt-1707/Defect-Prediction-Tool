@@ -1,0 +1,5 @@
+outs:
+- md5: 66e96535f024cea1c569e7042c23cfe0
+  size: 188977131
+  hash: md5
+  path: deepjit_extended.pt
