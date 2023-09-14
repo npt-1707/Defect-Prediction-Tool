@@ -1,0 +1,8 @@
+[core]
+    remote = storage
+['remote "storage"']
+    url = gdrive://1R2EPGwqDk4f7B-bwluvkoh2qiYVKdgAs
+    gdrive_client_id = 515220301377-6015nql03h01qkg5maahiusa1int0b54.apps.googleusercontent.com
+    gdrive_client_secret = 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
+    gdrive_use_service_account = true
+    gdrive_service_account_user_email = defectguard@colab-385406.iam.gserviceaccount.com
