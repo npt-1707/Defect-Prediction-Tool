@@ -14,6 +14,5 @@ dist
 build
 defectguard.egg-info
 publish.sh
-colab-385406-e848129cc804.json
 /models
 build-publish-test.sh

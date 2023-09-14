@@ -1,4 +1,4 @@
-import os, subprocess
+import os, dvc.api
 
 def download(model_name, destination_path='models/'):
     # Check if the folder already exists locally
