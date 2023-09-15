@@ -1,10 +1,10 @@
 from defectguard.BaseHandler import BaseHandler
-import dvc.api, pickle
+import dvc.api, pickle, json, torch, io
 from defectguard.config.config import CONFIG
 from defectguard.deepjit.model import DeepJITModel
 
 class DeepJIT(BaseHandler):
-    def __init__(self, model='deepjit', dictionary='platform', device="auto"):
+    def __init__(self, model='deepjit', dictionary='platform', device="cpu"):
         self.initialized = False
         self.model_pt = dvc.api.read(
             f'models/deepjit/{model}.pt',
@@ -33,7 +33,7 @@ class DeepJIT(BaseHandler):
         dict_msg, dict_code = dictionary
 
         # Load parameters
-        params = self.model_params
+        params = json.loads(self.model_params)
 
         # Set up param
         params["filter_sizes"] = [int(k) for k in params["filter_sizes"].split(',')]
@@ -41,8 +41,8 @@ class DeepJIT(BaseHandler):
         params["class_num"] = 1
 
         # Create model and Load pretrain
-        self.model = DeepJIT(params).to(device=self.device)
-        self.model.load_state_dict(self.model_pt, map_location=self.device)
+        self.model = DeepJITModel(params).to(device=self.device)
+        self.model.load_state_dict(torch.load(io.BytesIO(self.model_pt), map_location=self.device))
 
         # Set initialized to True
         self.initialized = True
