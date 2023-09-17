@@ -2,4 +2,4 @@ outs:
 - md5: 156413f184832f09b3d1151686f88389
   size: 17182877
   hash: md5
-  path: deepjit.pt
+  path: platform_within.pt
