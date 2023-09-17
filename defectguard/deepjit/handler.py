@@ -1,29 +1,30 @@
 from defectguard.BaseHandler import BaseHandler
-import dvc.api, pickle, json, torch, io
-from defectguard.config.config import CONFIG
+import pickle, json, torch, io
 from defectguard.deepjit.model import DeepJITModel
+from defectguard.utils.utils import load_metadata
 
 class DeepJIT(BaseHandler):
-    def __init__(self, model='deepjit', dictionary='platform', device="cpu"):
+    def __init__(self, model='deepjit', version='platform_within', dictionary='platform', device="cpu"):
         self.initialized = False
-        self.model_pt = dvc.api.read(
-            f'models/deepjit/{model}.pt',
-            repo="https://github.com/manhlamabc123/DefectGuard",
-            mode='rb',
-            config=CONFIG
-        )
-        self.model_params = dvc.api.read(
-            'models/deepjit/deepjit.json',
-            repo="https://github.com/manhlamabc123/DefectGuard",
-            mode='r',
-            config=CONFIG
-        )
-        self.dictionary = dvc.api.read(
-            f'models/deepjit/{dictionary}_dict.pkl',
-            repo="https://github.com/manhlamabc123/DefectGuard",
-            mode='rb',
-            config=CONFIG
-        )
+        # self.model_pt = dvc.api.read(
+        #     f'models/deepjit/{model}.pt',
+        #     repo="https://github.com/manhlamabc123/DefectGuard",
+        #     mode='rb',
+        #     config=CONFIG
+        # )
+        # self.model_params = dvc.api.read(
+        #     'models/deepjit/deepjit.json',
+        #     repo="https://github.com/manhlamabc123/DefectGuard",
+        #     mode='r',
+        #     config=CONFIG
+        # )
+        # self.dictionary = dvc.api.read(
+        #     f'models/deepjit/{dictionary}_dict.pkl',
+        #     repo="https://github.com/manhlamabc123/DefectGuard",
+        #     mode='rb',
+        #     config=CONFIG
+        # )
+        self.model_pt, self.model_params, self.dictionary = load_metadata(model, version, dictionary)
         self.model = None
         self.device = device
         
