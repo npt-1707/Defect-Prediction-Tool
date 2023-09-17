@@ -1,0 +1,5 @@
+outs:
+- md5: 62457362597d0ac4e0790562350d56d0
+  size: 3123656
+  hash: md5
+  path: platform_dict.pkl

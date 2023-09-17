@@ -1,0 +1,5 @@
+outs:
+- md5: a80b7ee98054d6b2fb3b7696e89f8d2a
+  size: 36622867
+  hash: md5
+  path: sim_go_within.pkl
