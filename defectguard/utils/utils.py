@@ -27,8 +27,13 @@ MODELS = {
     },
 }
 
-def save_file(file_contents, file_path):
-    with open(file_path, 'wb') as file:
+def save_file(file_contents, file_name, file_path):
+    # Create the directory if it doesn't exist
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    with open(f'{file_path}/{file_name}', 'xb') as file:
         pickle.dump(file_contents, file)
 
 def load_file(file_path):
@@ -38,6 +43,7 @@ def load_file(file_path):
 
 def download(model_name, file_name, cache):
     # Check if the file exists locally
+    app_path = str(files('defectguard'))
     file_path = str(files('defectguard').joinpath(f'models/{model_name}/{file_name}'))
     print(f"File's path: {file_path}")
     if not os.path.isfile(file_path):
@@ -52,7 +58,7 @@ def download(model_name, file_name, cache):
         )
 
         if cache:
-            save_file(file_contents, file_path)
+            save_file(file_contents, file_name, f'{app_path}/models/{model_name}')
 
         print(f"File '{file_name}' downloaded.")
 

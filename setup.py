@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.8'
+VERSION = '0.1.16'
 DESCRIPTION = 'A cutting-edge defect prediction tool with up-to-date Just-in-Time techniques and a robust API, empowering software development teams to proactively identify and mitigate defects in real-time'
 
 # Setting up
@@ -14,7 +14,19 @@ setup(
     package_data={
         "defectguard.utils": ["*.json"],
     },
-    install_requires=['numpy', 'pandas', 'PyGithub', 'Requests', 'tqdm', 'scikit-learn', 'torch', 'imblearn', 'scipy', 'dvc', 'dvc-gdrive'],
+    install_requires=[
+        'numpy',
+        'pandas>=2.0.2',
+        'PyGithub>=1.58.1',
+        'Requests>=2.31.0',
+        'tqdm>=4.65.0',
+        'scikit-learn>=1.2.2',
+        'torch>=2.0.0',
+        'imblearn',
+        'scipy>=1.11.2',
+        'dvc>=3.19.0',
+        'dvc-gdrive'
+        ],
     keywords=['python', 'defect', 'prediction', 'just-in-time', 'defect prediction'],
     entry_points={
         'console_scripts': ['defectguard=defectguard:main'],
