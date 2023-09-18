@@ -34,7 +34,14 @@ IDS = {
         'go_within': '1r1mSvWvt4S93cZPI_j_bOKppBI-laLlI',
         'gerrit_within': '1484sBLghCpPd3XCpHt9Gqd_hvdq7TPP1',
     },
-    'tlel': '',
+    'tlel': {
+        'qt_within': '1ZvwEQ6lbb_43_JBgEB6VnRxR7HNQZlOk',
+        'platform_within': '1vS26ng_kZ5gdYESyWrfciMacXz74AzhZ',
+        'openstack_within': '1yCOI_5inFnxH1EDS2JpA282UN7Zc1AXV',
+        'jdt_within': '1GUEC7kFCybuoEetr-1Tis_6EmaWXgWwG',
+        'go_within': '1siGmkBSq5qcuoxnhxo2Gc2_IhrVnLmWh',
+        'gerrit_within': '1CI326L7vwokRXxwRdufzOvKtciPUj_TX',
+    },
     'jitline': '',
 }
 

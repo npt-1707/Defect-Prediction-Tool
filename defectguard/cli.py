@@ -73,12 +73,16 @@ def main():
         print("User's input: ", json.dumps(dict_without_token, indent=4))
 
     # Extract info from user's repo
-    ## current_dir = os.getcwd()
-    ## extractor = RepositoryExtractor(params.repo, current_dir, params.main_language)
-    ## extractor.get_repo_commits_info(main_language_only=True)
-    ## extractor.extract_repo_k_features()
-    ## user_input["features"] = extractor.features[params.commit_hash]
-    ## user_input['commit_info'] = extractor.commits[params.commit_hash]
+
+    #-----THANH-------
+    current_dir = os.getcwd()
+    extractor = RepositoryExtractor(params.repo, current_dir, params.main_language)
+    extractor.get_repo_commits_info(main_language_only=True)
+    extractor.extract_repo_k_features()
+    user_input["features"] = extractor.features[params.commit_hash]
+    user_input['commit_info'] = extractor.commits[params.commit_hash]
+    #-----THANH-------
+
 
     # Load Preprocess
 
