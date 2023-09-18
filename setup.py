@@ -7,8 +7,8 @@ DESCRIPTION = 'A cutting-edge defect prediction tool with up-to-date Just-in-Tim
 setup(
     name="defectguard",
     version=VERSION,
-    author="NeuralNine (Florian Dedov)",
-    author_email="<mail@neuralnine.com>",
+    author="manhtd",
+    author_email="manh.td194616@sis.hust.edu.vn",
     description=DESCRIPTION,
     packages=find_packages(),
     package_data={
@@ -16,16 +16,15 @@ setup(
     },
     install_requires=[
         'numpy',
-        'pandas>=2.0.2',
-        'PyGithub>=1.58.1',
-        'Requests>=2.31.0',
-        'tqdm>=4.65.0',
-        'scikit-learn>=1.2.2',
-        'torch>=2.0.0',
+        'pandas',
+        'PyGithub',
+        'Requests',
+        'tqdm',
+        'scikit-learn',
+        'torch',
         'imblearn',
-        'scipy>=1.11.2',
-        'dvc>=3.19.0',
-        'dvc-gdrive'
+        'scipy',
+        'gdown'
         ],
     keywords=['python', 'defect', 'prediction', 'just-in-time', 'defect prediction'],
     entry_points={

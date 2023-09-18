@@ -16,3 +16,4 @@ publish.sh
 build-publish-test.sh
 dvc-add.sh
 remove-files.sh
+models

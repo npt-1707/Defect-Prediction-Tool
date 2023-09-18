@@ -1,40 +1,26 @@
 from defectguard.BaseHandler import BaseHandler
 import pickle, json, torch, io
 from defectguard.deepjit.model import DeepJITModel
-from defectguard.utils.utils import load_metadata
+from defectguard.utils.utils import download_folder, SRC_PATH
 
 class DeepJIT(BaseHandler):
-    def __init__(self, model='deepjit', version='platform_within', dictionary='platform', device="cpu"):
+    def __init__(self, version='platform_within', dictionary='platform', device="cpu"):
+        self.model_name = 'deepjit'
+        self.version = version
+        self.dictionary = dictionary
         self.initialized = False
-        # self.model_pt = dvc.api.read(
-        #     f'models/deepjit/{model}.pt',
-        #     repo="https://github.com/manhlamabc123/DefectGuard",
-        #     mode='rb',
-        #     config=CONFIG
-        # )
-        # self.model_params = dvc.api.read(
-        #     'models/deepjit/deepjit.json',
-        #     repo="https://github.com/manhlamabc123/DefectGuard",
-        #     mode='r',
-        #     config=CONFIG
-        # )
-        # self.dictionary = dvc.api.read(
-        #     f'models/deepjit/{dictionary}_dict.pkl',
-        #     repo="https://github.com/manhlamabc123/DefectGuard",
-        #     mode='rb',
-        #     config=CONFIG
-        # )
-        self.model_pt, self.model_params, self.dictionary = load_metadata(model, version, dictionary)
         self.model = None
         self.device = device
+        download_folder(self.model_name, self.version, self.dictionary)
         
     def initialize(self):
         # Load dictionary
-        dictionary = pickle.loads(self.dictionary)   
+        dictionary = pickle.load(open(f"{SRC_PATH}/models/{self.model_name}/{self.dictionary}_dictionary", 'rb'))
         dict_msg, dict_code = dictionary
 
         # Load parameters
-        params = json.loads(self.model_params)
+        with open(f"{SRC_PATH}/models/{self.model_name}/hyperparameters", 'r') as file:
+            params = json.load(file)
 
         # Set up param
         params["filter_sizes"] = [int(k) for k in params["filter_sizes"].split(',')]
@@ -43,7 +29,7 @@ class DeepJIT(BaseHandler):
 
         # Create model and Load pretrain
         self.model = DeepJITModel(params).to(device=self.device)
-        self.model.load_state_dict(torch.load(io.BytesIO(self.model_pt), map_location=self.device))
+        self.model.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/{self.version}", map_location=self.device))
 
         # Set initialized to True
         self.initialized = True
