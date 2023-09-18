@@ -2,10 +2,9 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 
-
-class DeepJIT(nn.Module):
+class DeepJITModel(nn.Module):
     def __init__(self, params):
-        super(DeepJIT, self).__init__()
+        super(DeepJITModel, self).__init__()
         self.params = params
 
         V_msg = params["vocab_msg"]

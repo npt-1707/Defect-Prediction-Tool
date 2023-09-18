@@ -15,7 +15,17 @@ IDS = {
         'hyperparameters': '1Zim5j4eKfl84r4mGDmRELwAwg8oVQ5uJ',
         'cc2vec_qt_within': '1-ZQjygr6myPj4ml-VyyiyrGKiL0HV2Td',
     },
-    'simcom': '',
+    'simcom': {
+        'hyperparameters': '1Y9pt5EShp5Z2Q2Ff6EjHp0fxByXWViw6',
+        'sim_qt_within': '1zee0mzb1bjnnim-WMer2K6e3WlWMNC0D',
+        'sim_platform_within': '1SJ8UnaMQlaB58E7VsQWbHFmh2ms0QFg_',
+        'sim_openstack_within': '1iJDpDLL19d_dp7mdjxu0ADqN25Hgyxuk',
+        'sim_jdt_within': '1PPz385vq3cuuTf5pqM4k4c018rXoN1If',
+        'sim_go_within': '1nknqQPbgJJXXCJ5pa4G27ymcEY2goxBq',
+        'sim_gerrit_within': '1CmsiNXe5qXtEw6rG7IXLq2KVLslhOcij',
+        'platform_dictionary': '19h6kUCiHXTsijXUEArxSx4afS4hdKrvx',
+        'com_platform_within': '1KmUkYFVaH34kBA4pW8qXgv1JV9qCRtkx',
+    },
     'lapredict': '',
     'tlel': '',
     'jitline': '',
@@ -29,7 +39,7 @@ def create_download_list(model_name, version, dictionary):
         com_version = f'com_{version}'
         download_list.append(sim_version)
         download_list.append(com_version)
-    if model_name == 'cc2vec':
+    elif model_name == 'cc2vec':
         cc2vec_version = f'cc2vec_{version}'
         dextended_version = f'dextended_{version}'
         download_list.append(cc2vec_version)
