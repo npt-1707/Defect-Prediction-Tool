@@ -28,7 +28,7 @@ def template():
     predict = []
     for file in files:
         with open(os.path.join(model_path, file), "rb") as f:
-            model = pickle.load(f) 
+            model = pickle.load(f)
         predict.append(model.predict_proba(input)[:, 1][0])
     
     # if app.debug:
