@@ -1,4 +1,4 @@
-from utils import *
+from .utils import *
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer
 from imblearn.over_sampling import SMOTE
@@ -20,7 +20,7 @@ def objective_func(k, train_feature, train_label, valid_feature, valid_label):
     return -auc
 
 
-class JITLine:
+class JITLineModel:
     def __init__(self, language=None, load_path=None):
         self.model = RandomForestClassifier(n_estimators=300, random_state=42)
         self.count_vect = CountVectorizer(min_df=3, ngram_range=(1, 1))

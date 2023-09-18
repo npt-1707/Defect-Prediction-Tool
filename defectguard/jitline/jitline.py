@@ -1,7 +1,7 @@
 from flask import Flask, request
 import pandas as pd
 import os, json
-from JITLine import JITLine
+from .model import JITLine
 
 app = Flask(__name__)
 
