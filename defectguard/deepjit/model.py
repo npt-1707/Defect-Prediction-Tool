@@ -2,7 +2,6 @@ import torch.nn as nn
 import torch
 import torch.nn.functional as F
 
-
 class DeepJITModel(nn.Module):
     def __init__(self, params):
         super(DeepJITModel, self).__init__()

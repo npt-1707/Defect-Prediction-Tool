@@ -9,7 +9,12 @@ IDS = {
         'hyperparameters': '1US-qs1Ly9wfRADcEMLBtTa8Ao91wNwOv',
         'platform_dictionary': '1XUq2KUwf6yT3zskeB-E8otcNnxvb4gFK',
     },
-    'cc2vec': '',
+    'cc2vec': {
+        'qt_dictionary': '1GTgkEcZdwVDzp0Tq86Uch_j5f4assfSU',
+        'dextended_qt_within': '1uuSeYee40Azw1jWD2ln287GZ49ApTMxL',
+        'hyperparameters': '1Zim5j4eKfl84r4mGDmRELwAwg8oVQ5uJ',
+        'cc2vec_qt_within': '1-ZQjygr6myPj4ml-VyyiyrGKiL0HV2Td',
+    },
     'simcom': '',
     'lapredict': '',
     'tlel': '',
@@ -24,6 +29,11 @@ def create_download_list(model_name, version, dictionary):
         com_version = f'com_{version}'
         download_list.append(sim_version)
         download_list.append(com_version)
+    if model_name == 'cc2vec':
+        cc2vec_version = f'cc2vec_{version}'
+        dextended_version = f'dextended_{version}'
+        download_list.append(cc2vec_version)
+        download_list.append(dextended_version)
     else:
         download_list.append(version)
 

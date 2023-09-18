@@ -1,15 +1,16 @@
 from defectguard.BaseHandler import BaseHandler
 import pickle, json, torch
-from defectguard.deepjit.model import DeepJITModel
+from defectguard.cc2vec.model import HierachicalRNN, DeepJITExtended
 from defectguard.utils.utils import download_folder, SRC_PATH
 
-class DeepJIT(BaseHandler):
-    def __init__(self, version='platform_within', dictionary='platform', device="cpu"):
-        self.model_name = 'deepjit'
+class CC2Vec(BaseHandler):
+    def __init__(self, version='qt_within', dictionary='qt', device="cpu"):
+        self.model_name = 'cc2vec'
         self.version = version
         self.dictionary = dictionary
         self.initialized = False
-        self.model = None
+        self.cc2vec = None
+        self.deepjit_extended = None
         self.device = device
         download_folder(self.model_name, self.version, self.dictionary)
         
@@ -25,11 +26,16 @@ class DeepJIT(BaseHandler):
         # Set up param
         params["filter_sizes"] = [int(k) for k in params["filter_sizes"].split(',')]
         params["vocab_msg"], params["vocab_code"] = len(dict_msg), len(dict_code)
-        params["class_num"] = 1
+        params["cc2vec_class_num"] = len(dict_msg)
+        params["deepjit_class_num"] = 1
+        params["embedding_feature"] = params['embedding_size'] * 3 + 2 + 2
 
-        # Create model and Load pretrain
-        self.model = DeepJITModel(params).to(device=self.device)
-        self.model.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/{self.version}", map_location=self.device))
+        # Initialize model
+        self.cc2vec = HierachicalRNN(params).to(device=self.device)
+        self.cc2vec.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/cc2vec_{self.version}", map_location=self.device))
+
+        self.deepjit_extended = DeepJITExtended(params).to(device=self.device)
+        self.deepjit_extended.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/dextended_{self.version}", map_location=self.device))
 
         # Set initialized to True
         self.initialized = True
