@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.0'
+VERSION = '0.1.8'
 DESCRIPTION = 'A cutting-edge defect prediction tool with up-to-date Just-in-Time techniques and a robust API, empowering software development teams to proactively identify and mitigate defects in real-time'
 
 # Setting up
@@ -10,12 +10,11 @@ setup(
     author="NeuralNine (Florian Dedov)",
     author_email="<mail@neuralnine.com>",
     description=DESCRIPTION,
-    packages=find_packages(where="defectguard"),
-    package_dir={"": "defectguard"},
+    packages=find_packages(),
     package_data={
-        "config": ["*.json"],
+        "defectguard.utils": ["*.json"],
     },
-    install_requires=['numpy', 'pandas', 'PyGithub', 'Requests', 'tqdm', 'scikit-learn', 'torch', 'imblearn', 'scipy', 'dvc'],
+    install_requires=['numpy', 'pandas', 'PyGithub', 'Requests', 'tqdm', 'scikit-learn', 'torch', 'imblearn', 'scipy', 'dvc', 'dvc-gdrive'],
     keywords=['python', 'defect', 'prediction', 'just-in-time', 'defect prediction'],
     entry_points={
         'console_scripts': ['defectguard=defectguard:main'],

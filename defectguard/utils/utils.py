@@ -1,7 +1,7 @@
 from importlib.resources import files
 import dvc.api, os, pickle
 
-config_path = str(files('utils').joinpath('colab-385406-e848129cc804.json'))
+config_path = str(files('defectguard').joinpath('utils/colab-385406-e848129cc804.json'))
 
 CONFIG = {
     'remote': {
@@ -45,7 +45,7 @@ def download(model_name, file_name, cache):
         print(f"File '{file_name}' does not exist locally. Downloading...")
 
         file_contents = dvc.api.read(
-            f'models/{model_name}/{file_name}',
+            f'defectguard/models/{model_name}/{file_name}',
             repo="https://github.com/manhlamabc123/DefectGuard",
             mode='rb',
             config=CONFIG
