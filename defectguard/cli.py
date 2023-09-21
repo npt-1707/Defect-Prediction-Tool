@@ -2,8 +2,12 @@ import argparse, json, os, getpass
 from urllib.parse import urlparse
 from .auto_extract.RepositoryExtractor import RepositoryExtractor
 
+__version__ = "0.1.0"
+
 def read_args():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     parser.add_argument('-repo', type=str, default='', help='path to git repo')
     parser.add_argument('-commit_hash', type=str, default='HEAD', help='commit hash')

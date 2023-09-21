@@ -1,4 +1,4 @@
-from .cli import main
+from .cli import main, __version__
 from .deepjit.handler import DeepJIT
 from .cc2vec.handler import CC2Vec
 from .simcom.handler import SimCom
@@ -8,5 +8,3 @@ from .jitline.handler import JITLine
 # Extractor
 from .auto_extract.RepositoryExtractor import RepositoryExtractor
 # EARL
-
-__version__ = "0.1.0"
