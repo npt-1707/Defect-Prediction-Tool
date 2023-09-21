@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.17'
+VERSION = '0.1.18'
 DESCRIPTION = 'A cutting-edge defect prediction tool with up-to-date Just-in-Time techniques and a robust API, empowering software development teams to proactively identify and mitigate defects in real-time'
 
 # Setting up
@@ -12,7 +12,7 @@ setup(
     description=DESCRIPTION,
     packages=find_packages(),
     package_data={
-        "defectguard.utils": ["*.json"],
+        "defectguard.utils": ["*.json", "*.pkl"],
     },
     install_requires=[
         'numpy',
