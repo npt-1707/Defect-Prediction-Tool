@@ -5,9 +5,11 @@ SRC_PATH = str(files('defectguard'))
 
 IDS = {
     'deepjit': {
-        'platform_within': '1I4y2i_dWsgqWtj8ytAPjAL3mGIROYjY3',
         'hyperparameters': '1US-qs1Ly9wfRADcEMLBtTa8Ao91wNwOv',
-        'platform_dictionary': '1XUq2KUwf6yT3zskeB-E8otcNnxvb4gFK',
+        'platform_within': '11Qjj84btTuqbYGpphmin0spMuGgJerNa',
+        'platform_cross': '1BTo26TU2G58OsBxoM-EidyijfnQZXuc4',
+        'platform_dictionary_within': '1C6nVSr0wLS8i8bH_IptCUKdqrdiSngcv',
+        'platform_dictionary_cross': '1XY4J3bCKo7IWMXcA2DJqVzzAD8XOZi-b',
     },
     'cc2vec': {
         'qt_dictionary': '1GTgkEcZdwVDzp0Tq86Uch_j5f4assfSU',
@@ -45,28 +47,31 @@ IDS = {
     'jitline': '',
 }
 
-def create_download_list(model_name, version, dictionary):
+def create_download_list(model_name, dataset, project):
     download_list = []
+    dictionary = f'{dataset}_dictionary_{project}'
+    version = f'{dataset}_{project}'
 
     if model_name == 'simcom':
-        sim_version = f'sim_{version}'
-        com_version = f'com_{version}'
-        download_list.append(sim_version)
-        download_list.append(com_version)
+        sim_dataset = f'sim_{version}'
+        com_dataset = f'com_{version}'
+        download_list.append(sim_dataset)
+        download_list.append(com_dataset)
         download_list.append('hyperparameters')
+        download_list.append(dictionary)
     elif model_name == 'cc2vec':
-        cc2vec_version = f'cc2vec_{version}'
-        dextended_version = f'dextended_{version}'
-        download_list.append(cc2vec_version)
-        download_list.append(dextended_version)
+        cc2vec_dataset = f'cc2vec_{version}'
+        dextended_dataset = f'dextended_{version}'
+        download_list.append(cc2vec_dataset)
+        download_list.append(dextended_dataset)
         download_list.append('hyperparameters')
+        download_list.append(dictionary)
     elif model_name == 'deepjit':
+        download_list.append(version)
         download_list.append('hyperparameters')
+        download_list.append(dictionary)
     else:
         download_list.append(version)
-
-    if dictionary is not None:
-        download_list.append(f'{dictionary}_dictionary')
     
     return download_list
 
@@ -77,7 +82,7 @@ def download_file(file_id, folder_path):
             output=folder_path
             )
 
-def download_folder(model_name, version, dictionary=None):
+def download_folder(model_name, dataset, project):
     # Check if the file exists locally
     folder_path = f'{SRC_PATH}/models/{model_name}'
     print(f"Folder's path: {folder_path}")
@@ -92,7 +97,7 @@ def download_folder(model_name, version, dictionary=None):
             os.makedirs(folder_path)
 
     # Download model's metadata
-    download_list = create_download_list(model_name, version, dictionary)
+    download_list = create_download_list(model_name, dataset, project)
     print(f"Download list: {download_list}")
     for item in download_list:
         download_file(IDS[model_name][item], f'{folder_path}/{item}')
