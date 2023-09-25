@@ -4,23 +4,23 @@ from defectguard.simcom.model import DeepJITModel
 from defectguard.utils.utils import download_folder, SRC_PATH
 
 class SimCom(BaseHandler):
-    def __init__(self, version='platform_within', dictionary='platform', device="cpu"):
+    def __init__(self, dataset='platform', project='within', device="cpu"):
         self.model_name = 'simcom'
-        self.version = version
-        self.dictionary = dictionary
+        self.dataset = dataset
+        self.project = project
         self.initialized = False
         self.com = None
         self.sim = None
         self.device = device
-        download_folder(self.model_name, self.version, self.dictionary)
+        download_folder(self.model_name, self.dataset, self.project)
         
     def initialize(self):
         # Create machine learning model
-        with open(f"{SRC_PATH}/models/{self.model_name}/sim_{self.version}", "rb") as f:
+        with open(f"{SRC_PATH}/models/{self.model_name}/sim_{self.dataset}_{self.project}", "rb") as f:
             self.sim = pickle.load(f)
             
         # Load dictionary
-        dictionary = pickle.load(open(f"{SRC_PATH}/models/{self.model_name}/{self.dictionary}_dictionary", 'rb'))
+        dictionary = pickle.load(open(f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_dictionary_{self.project}", 'rb'))
         dict_msg, dict_code = dictionary
 
         # Load parameters
@@ -34,7 +34,7 @@ class SimCom(BaseHandler):
 
         # Create model and Load pretrain
         self.com = DeepJITModel(params).to(device=self.device)
-        self.com.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/com_{self.version}", map_location=self.device))
+        self.com.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/com_{self.dataset}_{self.project}", map_location=self.device))
 
         # Set initialized to True
         self.initialized = True

@@ -1,6 +1,13 @@
 import argparse, json, os, getpass
 from urllib.parse import urlparse
 from .auto_extract.RepositoryExtractor import RepositoryExtractor
+from utils.utils import commit_to_info
+from .deepjit.handler import DeepJIT
+from .cc2vec.handler import CC2Vec
+from .simcom.handler import SimCom
+from .lapredict.handler import LAPredict
+from .tlel.handler import TLEL
+from .jitline.handler import JITLine
 
 __version__ = "0.1.0"
 
@@ -22,10 +29,11 @@ def read_args():
     parser.add_argument('-ensemble', nargs='+', type=str, default=[], choices=available_ensemble, help='list of deep learning models')
     parser.add_argument('-threshold', type=int, default=0.5, help='threshold')
 
-    available_deep_models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec']
-    available_traditional_models = ['lapredict', 'earl', 'tlel', 'jitline']
-    parser.add_argument('-deep', nargs='+', type=str, default=[], choices=available_deep_models, help='list of deep learning models')
-    parser.add_argument('-traditional', nargs='+', type=str, default=[], choices=available_traditional_models, help='list of machine learning models')
+    models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec', 'lapredict', 'earl', 'tlel', 'jitline']
+    parser.add_argument('-models', nargs='+', type=str, default=[], choices=models, help='list of deep learning models')
+    dataset = ['gerrit', 'go', 'platform', 'jdt', 'qt', 'openstack']
+    parser.add_argument('-dataset', type=str, default='openstack', choices=dataset, help='dataset')
+    parser.add_argument('-cross', action='store_true', help='cross project')
 
     parser.add_argument('-device', type=str, default='cpu', help='Ex: cpu, cuda, cuda:1')
 
@@ -33,14 +41,57 @@ def read_args():
 
     return parser
 
+def init_model(model_name, dataset, cross, device):
+    match model_name:
+        case 'deepjit':
+            return DeepJIT(
+                dataset=dataset,
+                project='cross' if cross else 'within',
+                device=device
+            )
+        case 'cc2vec':
+            return CC2Vec(
+                dataset=dataset,
+                project='cross' if cross else 'within',
+                device=device
+            )
+        case 'simcom':
+            return SimCom(
+                dataset=dataset,
+                project='cross' if cross else 'within',
+                device=device
+            )
+        case 'lapredict':
+            return LAPredict(
+                dataset=dataset,
+                project='cross' if cross else 'within',
+                device=device
+            )
+        case 'tlel':
+            return TLEL(
+                dataset=dataset,
+                project='cross' if cross else 'within',
+                device=device
+            )
+        case 'jitline':
+            return JITLine(
+                dataset=dataset,
+                project='cross' if cross else 'within',
+                device=device
+            )
+        case _:
+            raise Exception('No such model')
+
+
 def main():
     params = read_args().parse_args()
 
     user_input = {
         'ensemble': params.ensemble,
         'threshold': params.threshold,
-        "deep_models": params.deep,
-        "traditional_models": params.traditional,
+        "models": params.models,
+        'dataset': params.dataset,
+        'cross': params.cross,
         "device": params.device
     }
     
@@ -84,12 +135,20 @@ def main():
     extractor.get_repo_commits_info(main_language_only=True)
     extractor.extract_repo_k_features()
     user_input["features"] = extractor.features[params.commit_hash]
-    user_input['commit_info'] = extractor.commits[params.commit_hash]
+    commit = extractor.commits[params.commit_hash]
+    user_input["commit_info"] = commit_to_info(commit)
     #-----THANH-------
+    
+    print(json.dumps(user_input, indent=4))
+
+    # Load Model
+    model_list = {}
+    for model in params.models:
+        model_list[model] = init_model(model, params.dataset, params.cross, params.device)
+
+    print(json.dumps(model_list, indent=4))
 
 
     # Load Preprocess
-
-    # Load Model
 
     # Inference

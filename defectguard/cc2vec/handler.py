@@ -4,19 +4,19 @@ from defectguard.cc2vec.model import HierachicalRNN, DeepJITExtended
 from defectguard.utils.utils import download_folder, SRC_PATH
 
 class CC2Vec(BaseHandler):
-    def __init__(self, version='qt_within', dictionary='qt', device="cpu"):
+    def __init__(self, dataset='qt', project='within', device="cpu"):
         self.model_name = 'cc2vec'
-        self.version = version
-        self.dictionary = dictionary
+        self.dataset = dataset
+        self.project = project
         self.initialized = False
         self.cc2vec = None
         self.deepjit_extended = None
         self.device = device
-        download_folder(self.model_name, self.version, self.dictionary)
+        download_folder(self.model_name, self.dataset, self.project)
         
     def initialize(self):
         # Load dictionary
-        dictionary = pickle.load(open(f"{SRC_PATH}/models/{self.model_name}/{self.dictionary}_dictionary", 'rb'))
+        dictionary = pickle.load(open(f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_dictionary_{self.project}", 'rb'))
         dict_msg, dict_code = dictionary
 
         # Load parameters
@@ -32,10 +32,10 @@ class CC2Vec(BaseHandler):
 
         # Initialize model
         self.cc2vec = HierachicalRNN(params).to(device=self.device)
-        self.cc2vec.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/cc2vec_{self.version}", map_location=self.device))
+        self.cc2vec.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/cc2vec_{self.dataset}_{self.project}", map_location=self.device))
 
         self.deepjit_extended = DeepJITExtended(params).to(device=self.device)
-        self.deepjit_extended.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/dextended_{self.version}", map_location=self.device))
+        self.deepjit_extended.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/dextended_{self.dataset}_{self.project}", map_location=self.device))
 
         # Set initialized to True
         self.initialized = True

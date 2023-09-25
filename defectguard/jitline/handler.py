@@ -3,16 +3,17 @@ from .model import JITLineModel
 from defectguard.utils.utils import download_folder, SRC_PATH
 
 class JITLine(BaseHandler):
-    def __init__(self, version='platform_within', device="cpu"):
+    def __init__(self, dataset='platform', project='within', device="cpu"):
         self.model_name = 'jitline'
-        self.version = version
+        self.dataset = dataset
+        self.project = project
         self.initialized = False
         self.model = None
         self.device = device
-        download_folder(self.model_name, self.version)
+        download_folder(self.model_name, self.dataset, self.project)
         
     def initialize(self):
-        self.model = JITLineModel(load_path=f"{SRC_PATH}/models/{self.model_name}/{self.version}")
+        self.model = JITLineModel(load_path=f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_{self.project}")
 
         # Set initialized to True
         self.initialized = True

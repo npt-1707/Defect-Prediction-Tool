@@ -3,16 +3,17 @@ import pickle
 from defectguard.utils.utils import download_folder, SRC_PATH
 
 class LAPredict(BaseHandler):
-    def __init__(self, version='platform_within', device="cpu"):
+    def __init__(self, dataset='platform', project='within', device="cpu"):
         self.model_name = 'lapredict'
-        self.version = version
+        self.dataset = dataset
+        self.project = project
         self.initialized = False
         self.model = None
         self.device = device
-        download_folder(self.model_name, self.version)
+        download_folder(self.model_name, self.dataset)
         
     def initialize(self):
-        with open(f"{SRC_PATH}/models/{self.model_name}/{self.version}", "rb") as f:
+        with open(f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_{self.project}", "rb") as f:
             self.model = pickle.load(f)
 
         # Set initialized to True
