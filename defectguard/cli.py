@@ -42,41 +42,42 @@ def read_args():
     return parser
 
 def init_model(model_name, dataset, cross, device):
+    project = 'cross' if cross else 'within'
     match model_name:
         case 'deepjit':
             return DeepJIT(
                 dataset=dataset,
-                project='cross' if cross else 'within',
+                project=project,
                 device=device
             )
         case 'cc2vec':
             return CC2Vec(
                 dataset=dataset,
-                project='cross' if cross else 'within',
+                project=project,
                 device=device
             )
         case 'simcom':
             return SimCom(
                 dataset=dataset,
-                project='cross' if cross else 'within',
+                project=project,
                 device=device
             )
         case 'lapredict':
             return LAPredict(
                 dataset=dataset,
-                project='cross' if cross else 'within',
+                project=project,
                 device=device
             )
         case 'tlel':
             return TLEL(
                 dataset=dataset,
-                project='cross' if cross else 'within',
+                project=project,
                 device=device
             )
         case 'jitline':
             return JITLine(
                 dataset=dataset,
-                project='cross' if cross else 'within',
+                project=project,
                 device=device
             )
         case _:
