@@ -146,9 +146,11 @@ def main():
     for model in params.models:
         model_list[model] = init_model(model, params.dataset, params.cross, params.device)
 
-    print(json.dumps(model_list, indent=4))
-
-
-    # Load Preprocess
+    print(model_list.keys())
 
     # Inference
+    outputs = {}
+    for model in model_list.keys():
+        outputs[model] = model_list[model].handle(user_input)
+
+    print(json.dumps(outputs, indent=4))
