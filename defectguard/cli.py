@@ -1,4 +1,4 @@
-import argparse, json, os, getpass
+import argparse, json, os, getpass, sys
 from urllib.parse import urlparse
 from .auto_extract.RepositoryExtractor import RepositoryExtractor
 from utils.utils import commit_to_info
@@ -115,12 +115,27 @@ def main():
                     user_input['access_token'] = f.read().strip()
         else:
             raise Exception(f'{params.commit} not a GitHub commit link')
+        
+        owner, repo_name = parsed_url.path[:parsed_url.path.find('/commit/')].split('/')[1:3]
+        
+        extract_config = {
+            "mode": "online",
+            "github_token_path": os.path.join(sys.path[0], "github_access_token.txt"),
+            "github_owner": owner,
+            "github_repo": repo_name,
+        }
 
     if params.repo != '':
         if params.commit_hash == '':
             raise Exception(f'Commit hash is required')
         if params.main_language == '':
             raise Exception(f"Repository's main language is required")
+        
+        extract_config = {
+            "mode": "local",
+            "local_repo_path": params.repo,
+            "main_language": params.main_language,
+        }
                 
     if params.debug:
         dict_without_token = user_input.copy()
@@ -131,13 +146,17 @@ def main():
     # Extract info from user's repo
 
     #-----THANH-------
-    current_dir = os.getcwd()
-    extractor = RepositoryExtractor(params.repo, current_dir, params.main_language)
-    extractor.get_repo_commits_info(main_language_only=True)
-    extractor.extract_repo_k_features()
-    user_input["features"] = extractor.features[params.commit_hash]
-    commit = extractor.commits[params.commit_hash]
-    user_input["commit_info"] = commit_to_info(commit)
+    save_path = os.path.join(sys.path[0], "auto_extract/save")
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    extract_config["save_path"]=save_path
+    extract_config["to_csv"]=False        
+        
+    extractor = RepositoryExtractor()
+    extractor.config_repo(**extract_config)
+    commits, features = extractor.get_commits([params.commit_hash])
+    user_input["features"] = features[0]
+    user_input["commit_info"] = commit_to_info(commits[0])
     #-----THANH-------
     
     print(json.dumps(user_input, indent=4))

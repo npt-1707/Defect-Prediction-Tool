@@ -1,8 +1,25 @@
 import os
 import math
-from .line_parser import parse_lines
-from .aggregator import aggregator
+from utils.line_parser import parse_lines
+from utils.aggregator import aggregator
 import subprocess
+import re
+import pickle
+import json
+
+
+def clone_repo(clone_path, name, url):
+    """
+    Clones a repository to the current directory
+    """
+    if name not in os.listdir(clone_path):
+        command = "git clone {}"
+        os.system(command.format(url))
+    else:
+        print(f"Existed '{name}' repository")
+        command = "git pull"
+        os.system(command)
+
 
 def exec_cmd(command):
     """
@@ -12,18 +29,23 @@ def exec_cmd(command):
     # output = pip.buffer.read().decode(encoding="utf8", errors="ignore")
     # output = output.strip("\n").split("\n") if output else []
     # return output
-    result = subprocess.run(command, shell=True, capture_output=True, text=False)
+    result = subprocess.run(command,
+                            shell=True,
+                            capture_output=True,
+                            text=False)
     output = result.stdout.strip(b"\n").split(b"\n") if result.stdout else []
-    output = [line.decode(encoding="utf8", errors="replace") for line in output]
+    output = [
+        line.decode(encoding="utf8", errors="replace") for line in output
+    ]
     return output
 
 
-def get_commit_hashes(date):
+def get_commit_hashes(end):
     """
-    Get commit hashes of a repository before `date`
+    Get commit hashes of a repository before `end`
     """
-    command = 'git log --all --before="{}" --no-decorate --no-merges --pretty=format:"%H"'
-    return exec_cmd(command.format(date))
+    command = 'git log --all --before={} --no-decorate --no-merges --pretty=format:"%H"'
+    return exec_cmd(command.format(end))
 
 
 def split_diff_log(file_diff_log):
@@ -45,27 +67,42 @@ def split_diff_log(file_diff_log):
     return files_log
 
 
+def is_numeric_string(string):
+    # Regular expression pattern to match decimal numbers
+    pattern = r"^[+-]?\d*\.?\d+$"
+
+    # Check if the string matches the pattern
+    return re.match(pattern, string) is not None
+
+
 def process_one_line_blame(log):
     log = log.split()
-    blame_id = log[0]
-    while not log[1].isnumeric():
+    while not is_numeric_string(log[1]):
         log.remove(log[1])
-    blame_line_a = int(log[1])
-    for idx, word in enumerate(log[2:]):
-        if word.isnumeric():
-            break
-    idx = idx + 2
-    blame_date = int(log[idx])
-    blame_autor = " ".join(log[2:idx])[1:]
-    blame_line_b = int(log[idx + 2][:-1])
+    log = " ".join(log)
 
-    return {
-        "blame_id": blame_id,
-        "blame_line_a": blame_line_a,
-        "blame_autor": blame_autor,
-        "blame_date": blame_date,
-        "blame_line_b": blame_line_b,
-    }
+    pattern = r'(\S+)\s+(\d+)\s+\((.*?)\s+(\d+)\s+[-+]\d{4}\s+(\d+)\)(.*)'
+
+    # Extract the information using the pattern
+    match = re.match(pattern, log)
+
+    if match:
+        # Extract the matched components
+        commit_id = match.group(1)
+        blame_line_a = int(match.group(2))
+        author_name = match.group(3)
+        date = int(match.group(4))
+        blame_line_b = int(match.group(5))
+
+        # Create a dictionary with the extracted information
+        return {
+            "blame_id": commit_id,
+            "blame_line_a": blame_line_a,
+            "blame_author": author_name,
+            "blame_date": date,
+            "blame_line_b": blame_line_b,
+        }
+    return None
 
 
 def get_file_blame(file_blame_log):
@@ -77,7 +114,7 @@ def get_file_blame(file_blame_log):
         if not line_blame["blame_id"] in id2line:
             id2line[line_blame["blame_id"]] = {
                 "id": line_blame["blame_id"],
-                "author": line_blame["blame_autor"],
+                "author": line_blame["blame_author"],
                 "time": line_blame["blame_date"],
                 "ranges": [],
             }
@@ -94,6 +131,75 @@ def get_file_blame(file_blame_log):
             ranges.append({"start": this_line, "end": this_line})
     return id2line
 
+
+def get_commit_info(commit_id, languages=[]):
+    command = "git show {} --name-only --pretty=format:'%H%n%P%n%an%n%ct%n%s%n%B%n[ALL CHANGE FILES]'"
+    show_msg = exec_cmd(command.format(commit_id))
+    show_msg = [msg.strip() for msg in show_msg]
+    file_index = show_msg.index("[ALL CHANGE FILES]")
+
+    subject = show_msg[4]
+    head = show_msg[:5]
+    commit_msg = show_msg[5:file_index]
+    # commit_files = show_msg[file_index + 1 :]
+
+    parent_id = head[1]
+    author = head[2]
+    commit_date = head[3]
+    commit_msg = " ".join(commit_msg)
+
+    command = "git show {} --pretty=format: --unified=999999999"
+    diff_log = split_diff_log(exec_cmd(command.format(commit_id)))
+    commit_diff = {}
+    commit_blame = {}
+    files = []
+    for log in diff_log:
+        try:
+            files_diff = aggregator(parse_lines(log))
+        except:
+            continue
+        for file_diff in files_diff:
+            file_name_a = (file_diff["from"]["file"] if file_diff["rename"]
+                           or file_diff["from"]["mode"] != "0000000" else
+                           file_diff["to"]["file"])
+            file_name_b = (file_diff["to"]["file"] if file_diff["rename"]
+                           or file_diff["to"]["mode"] != "0000000" else
+                           file_diff["from"]["file"])
+            if file_diff["is_binary"] or len(file_diff["content"]) == 0:
+                continue
+
+            if file_diff["from"]["mode"] == "000000000":
+                continue
+
+            if len(languages) > 0:
+                file_language = get_programming_language(file_name_b)
+                if file_language not in languages:
+                    continue
+
+            command = "git blame -t -n -l {} '{}'"
+            file_blame_log = exec_cmd(command.format(parent_id, file_name_a))
+            if not file_blame_log:
+                continue
+            file_blame = get_file_blame(file_blame_log)
+
+            commit_blame[file_name_b] = file_blame
+            commit_diff[file_name_b] = file_diff
+            files.append(file_name_b)
+
+    commit = {
+        "commit_id": commit_id,
+        "parent_id": parent_id,
+        "subject": subject,
+        "commit_msg": commit_msg,
+        "author": author,
+        "commit_date": int(commit_date),
+        "files": files,
+        "diff": commit_diff,
+        "blame": commit_blame,
+    }
+    return commit
+
+
 def find_file_author(blame, file_path):
     if not file_path in blame:
         return [], []
@@ -105,6 +211,7 @@ def find_file_author(blame, file_path):
         commit.add(file_blame[elem]["id"])
         author.add(name)
     return list(commit), list(author)
+
 
 def get_subs_dire_name(fileDirs):
     """
@@ -136,7 +243,8 @@ def calc_entrophy(totalLOCModified, locModifiedPerFile):
 
 
 def check_fix(msg):
-    bug_keywords = ["fix", "bug", "issue"]  # List of keywords indicating bug fixes
+    # List of keywords indicating bug fixes
+    bug_keywords = ["fix", "bug", "issue"]
     wrong_keywords = ["fix typo", "fix build", "non-fix"]
     if any(keyword in msg for keyword in bug_keywords):
         if not any(keyword in msg for keyword in wrong_keywords):
@@ -208,17 +316,42 @@ def get_programming_language(file_path):
         ".go": "Go",
         ".rs": "Rust",
         ".ts": "TypeScript",
-        ".cs": "C#"
-        # ".php": "PHP",
+        ".php": "PHP",
         # ".html": "HTML",
         # ".css": "CSS",
         # ".pl": "Perl",
         # ".sh": "Bash",
         # ".lua": "Lua",
         # ".sql": "SQL",
-        # ".cc": "C++",
+        ".cc": "C++",
         # ".h": "C",
         # Add more extensions and programming languages as needed
     }
 
     return language_map.get(extension, None)
+
+
+def load_pkl(path):
+    if not os.path.exists(path):
+        return {}
+    with open(path, "rb") as f:
+        data = pickle.load(f)
+    return data
+
+
+def load_json(path):
+    if not os.path.exists(path):
+        return {}
+    with open(path, "rb") as f:
+        data = json.load(f)
+    return data
+
+
+def save_pkl(data, path):
+    with open(path, "wb") as f:
+        pickle.dump(data, f)
+
+
+def save_json(data, path):
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
