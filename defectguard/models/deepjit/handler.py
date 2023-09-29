@@ -44,18 +44,27 @@ class DeepJIT(BaseHandler):
         print("Preprocessing...")
 
         commit_info = data['commit_info']
+        commit_hashes = []
+        commit_messages = []
+        codes = []
 
-        # Extract commit message
-        commit_message = commit_info['commit_message'].strip()
-        commit_message = split_sentence(commit_message)
-        commit_message = ' '.join(commit_message.split(' ')).lower()
-        
-        commit = commit_info['main_language_file_changes']
+        for commit in commit_info:
+            commit_hashes.append(commit['commit_hash'])
 
-        code = hunks_to_code(commit)
+            # Extract commit message
+            commit_message = commit['commit_message'].strip()
+            commit_message = split_sentence(commit_message)
+            commit_message = ' '.join(commit_message.split(' ')).lower()
+            
+            commit = commit['main_language_file_changes']
 
-        pad_msg = padding_data(data=[commit_message], dictionary=self.message_dictionary, params=self.parameters, type='msg')        
-        pad_code = padding_data(data=[code], dictionary=self.code_dictionary, params=self.parameters, type='code')
+            code = hunks_to_code(commit)
+
+            commit_messages.append(commit_message)
+            codes.append(code)
+
+        pad_msg = padding_data(data=commit_messages, dictionary=self.message_dictionary, params=self.parameters, type='msg')        
+        pad_code = padding_data(data=codes, dictionary=self.code_dictionary, params=self.parameters, type='code')
 
         # Using Pytorch Dataset and DataLoader
         code = {
@@ -63,7 +72,7 @@ class DeepJIT(BaseHandler):
             "message": pad_msg.tolist()
         }
         
-        return code
+        return commit_hashes, code
 
     def inference(self, model_input):
         if not self.initialized:
@@ -82,19 +91,21 @@ class DeepJIT(BaseHandler):
         
         return predict
 
-    def postprocess(self, inference_output):
+    def postprocess(self, commit_hashes, inference_output):
         if not self.initialized:
             self.initialize()
         print("Postprocessing...")
 
-        return inference_output.item()
+        inference_output = inference_output.tolist()
+
+        return {commit_hashes[i]: inference_output[i] for i in range(len(commit_hashes))}
 
     def handle(self, data):
         if not self.initialized:
             self.initialize()
         print("Handling...")
-        preprocessed_data = self.preprocess(data)
+        commit_hashes, preprocessed_data = self.preprocess(data)
         model_output = self.inference(preprocessed_data)
-        final_prediction = self.postprocess(model_output)
+        final_prediction = self.postprocess(commit_hashes, model_output)
 
         return final_prediction
