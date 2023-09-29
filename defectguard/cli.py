@@ -167,8 +167,6 @@ def main():
     for model in params.models:
         model_list[model] = init_model(model, params.dataset, params.cross, params.device)
 
-    print(model_list.keys())
-
     # Inference
     outputs = {}
     for model in model_list.keys():
