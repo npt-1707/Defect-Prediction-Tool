@@ -1,4 +1,4 @@
-from defectguard.BaseHandler import BaseHandler
+from defectguard.models.BaseHandler import BaseHandler
 from .model import JITLineModel
 from defectguard.utils.utils import download_folder, SRC_PATH
 

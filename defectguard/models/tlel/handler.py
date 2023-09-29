@@ -1,4 +1,4 @@
-from defectguard.BaseHandler import BaseHandler
+from defectguard.models.BaseHandler import BaseHandler
 import pickle
 from .TLEL import TLEL
 from defectguard.utils.utils import download_folder, SRC_PATH

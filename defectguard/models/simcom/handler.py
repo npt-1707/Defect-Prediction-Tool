@@ -1,4 +1,4 @@
-from defectguard.BaseHandler import BaseHandler
+from defectguard.models.BaseHandler import BaseHandler
 import pickle, json, torch
 from .model import DeepJITModel
 from defectguard.utils.utils import download_folder, SRC_PATH
