@@ -1,6 +1,6 @@
 import argparse, json, os, getpass, sys
 from urllib.parse import urlparse
-from .auto_extract.RepositoryExtractor import RepositoryExtractor
+from .extractor.RepositoryExtractor import RepositoryExtractor
 from utils.utils import commit_to_info
 from .deepjit.handler import DeepJIT
 from .cc2vec.handler import CC2Vec
