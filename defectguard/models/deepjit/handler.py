@@ -1,6 +1,6 @@
 from defectguard.BaseHandler import BaseHandler
 import pickle, json, torch
-from defectguard.deepjit.model import DeepJITModel
+from .model import DeepJITModel
 from defectguard.utils.utils import download_folder, SRC_PATH
 
 class DeepJIT(BaseHandler):
@@ -15,11 +15,11 @@ class DeepJIT(BaseHandler):
         
     def initialize(self):
         # Load dictionary
-        dictionary = pickle.load(open(f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_dictionary_{self.project}", 'rb'))
+        dictionary = pickle.load(open(f"{SRC_PATH}/models/metadata/{self.model_name}/{self.dataset}_dictionary_{self.project}", 'rb'))
         dict_msg, dict_code = dictionary
 
         # Load parameters
-        with open(f"{SRC_PATH}/models/{self.model_name}/hyperparameters", 'r') as file:
+        with open(f"{SRC_PATH}/models/metadata/{self.model_name}/hyperparameters", 'r') as file:
             params = json.load(file)
 
         # Set up param
@@ -29,7 +29,7 @@ class DeepJIT(BaseHandler):
 
         # Create model and Load pretrain
         self.model = DeepJITModel(params).to(device=self.device)
-        self.model.load_state_dict(torch.load(f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_{self.project}", map_location=self.device))
+        self.model.load_state_dict(torch.load(f"{SRC_PATH}/models/metadata/{self.model_name}/{self.dataset}_{self.project}", map_location=self.device))
 
         # Set initialized to True
         self.initialized = True

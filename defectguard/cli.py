@@ -1,13 +1,13 @@
 import argparse, json, os, getpass, sys
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
-from utils.utils import commit_to_info
-from .deepjit.handler import DeepJIT
-from .cc2vec.handler import CC2Vec
-from .simcom.handler import SimCom
-from .lapredict.handler import LAPredict
-from .tlel.handler import TLEL
-from .jitline.handler import JITLine
+from .utils.utils import commit_to_info
+from .models.deepjit.handler import DeepJIT
+from .models.cc2vec.handler import CC2Vec
+from .models.simcom.handler import SimCom
+from .models.lapredict.handler import LAPredict
+from .models.tlel.handler import TLEL
+from .models.jitline.handler import JITLine
 
 __version__ = "0.1.0"
 

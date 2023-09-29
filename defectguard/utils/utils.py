@@ -84,7 +84,7 @@ def download_file(file_id, folder_path):
 
 def download_folder(model_name, dataset, project):
     # Check if the file exists locally
-    folder_path = f'{SRC_PATH}/models/{model_name}'
+    folder_path = f'{SRC_PATH}/models/metadata/{model_name}'
     print(f"Folder's path: {folder_path}")
 
     if not os.path.exists(folder_path):

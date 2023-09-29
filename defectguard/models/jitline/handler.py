@@ -13,7 +13,7 @@ class JITLine(BaseHandler):
         download_folder(self.model_name, self.dataset, self.project)
         
     def initialize(self):
-        self.model = JITLineModel(load_path=f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_{self.project}")
+        self.model = JITLineModel(load_path=f"{SRC_PATH}/models/metadata/{self.model_name}/{self.dataset}_{self.project}")
 
         # Set initialized to True
         self.initialized = True

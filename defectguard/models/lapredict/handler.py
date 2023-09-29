@@ -13,7 +13,7 @@ class LAPredict(BaseHandler):
         download_folder(self.model_name, self.dataset)
         
     def initialize(self):
-        with open(f"{SRC_PATH}/models/{self.model_name}/{self.dataset}_{self.project}", "rb") as f:
+        with open(f"{SRC_PATH}/models/metadata/{self.model_name}/{self.dataset}_{self.project}", "rb") as f:
             self.model = pickle.load(f)
 
         # Set initialized to True

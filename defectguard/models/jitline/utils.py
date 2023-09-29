@@ -2,7 +2,7 @@ import re
 import pickle
 from defectguard.utils.utils import SRC_PATH
 
-with open(f'{SRC_PATH}/jitline/common_tokens.pkl', 'rb') as f:
+with open(f'{SRC_PATH}/models/jitline/common_tokens.pkl', 'rb') as f:
     common_tokens = pickle.load(f)
 
 def preprocess_code_line(code, remove_common_tokens = True, language='python'):
