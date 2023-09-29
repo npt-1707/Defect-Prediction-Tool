@@ -1,7 +1,7 @@
 import os
 import math
-from utils.line_parser import parse_lines
-from utils.aggregator import aggregator
+from .line_parser import parse_lines
+from .aggregator import aggregator
 import subprocess
 import re
 import pickle
