@@ -68,7 +68,6 @@ def aggregator(parsed_lines_iterable):
         if state in ("a_file_change_header", "b_file_change_header"):
             key = {"a_file_change_header": "from", "b_file_change_header": "to"}[state]
             if file_diff[key]["file"] != parsed["file"] and parsed["file"] is not None:
-                print(file_diff, parsed)
                 raise Exception("TODO: Exception text")
             continue
 

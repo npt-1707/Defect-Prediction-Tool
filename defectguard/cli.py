@@ -137,12 +137,6 @@ def main():
             "local_repo_path": params.repo,
             "main_language": params.main_language,
         }
-                
-    if params.debug:
-        dict_without_token = user_input.copy()
-        dict_without_token.pop("access_token", None)
-        dict_without_token.pop("commit_info", None)
-        print("User's input: ", json.dumps(dict_without_token, indent=4))
 
     # Extract info from user's repo
 
@@ -161,8 +155,6 @@ def main():
     for i in range(len(params.commit_hash)):
         user_input["commit_info"].append(commit_to_info(commits[i]))
     #-----THANH-------
-    
-    print(json.dumps(user_input, indent=4))
 
     # Load Model
     model_list = {}
@@ -174,4 +166,4 @@ def main():
     for model in model_list.keys():
         outputs[model] = model_list[model].handle(user_input)
 
-    print(json.dumps(outputs, indent=4))
+    print(outputs)

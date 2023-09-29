@@ -95,7 +95,7 @@ class DeepJIT(BaseHandler):
 
         inference_output = inference_output.tolist()
 
-        return {commit_hashes[i]: inference_output[i] for i in range(len(commit_hashes))}
+        return [{'commit_hash': commit_hashes[i], 'predict': inference_output[i]} for i in range(len(commit_hashes))]
 
     def handle(self, data):
         if not self.initialized:

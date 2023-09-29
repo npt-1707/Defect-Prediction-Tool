@@ -53,7 +53,6 @@ class RepositoryExtractor:
 
         save_path = os.path.join(os.path.abspath(config.save_path),
                                  self.cfg["name"])
-        print(save_path, self.cfg["name"])
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
@@ -233,7 +232,6 @@ class RepositoryExtractor:
             languages = [self.cfg["main_language"]]
         else:
             languages = []
-        print("Collecting commits information ...")
         is_updated = False
         for commit_id in tqdm(self.repo["ids"]):
             if commit_id not in self.repo["commits"]:
@@ -333,7 +331,6 @@ class RepositoryExtractor:
         return feature
 
     def extract_repo_commits_features(self, to_csv=False):
-        print("Extracting features ...")
         is_updated = False
         for commit_id in tqdm(self.repo["commits"]):
             if commit_id not in self.repo["features"]:
@@ -360,7 +357,6 @@ class RepositoryExtractor:
             self.to_csv()
 
     def to_csv(self):
-        print("Saving features to CSV...", end=" ")
         (
             _id,
             date,
@@ -415,7 +411,6 @@ class RepositoryExtractor:
             "sexp": sexp,
         }
         pd.DataFrame(data).to_csv(self.cfg["csv_path"])
-        print("Done")
 
     def get_commits(self, commit_ids: list):
         """

@@ -88,8 +88,6 @@ def download_folder(model_name, dataset, project):
 
     if not os.path.exists(folder_path):
         # File doesn't exist, download it
-        print(f"'{model_name}' does not exist locally. Downloading...")
-
         # Create the directory if it doesn't exist
         print(f"Directory: {folder_path}")
         if not os.path.exists(folder_path):
@@ -99,9 +97,6 @@ def download_folder(model_name, dataset, project):
     download_list = create_download_list(model_name, dataset, project)
     for item in download_list:
         download_file(IDS[model_name][item], f'{folder_path}/{item}')
-
-    print(f"'{model_name}' downloaded.")
-
 
 def extract_diff(diff):
     num_added_lines = 0
