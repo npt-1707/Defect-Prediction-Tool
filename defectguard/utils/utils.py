@@ -85,7 +85,6 @@ def download_file(file_id, folder_path):
 def download_folder(model_name, dataset, project):
     # Check if the file exists locally
     folder_path = f'{SRC_PATH}/models/metadata/{model_name}'
-    print(f"Folder's path: {folder_path}")
 
     if not os.path.exists(folder_path):
         # File doesn't exist, download it
@@ -98,7 +97,6 @@ def download_folder(model_name, dataset, project):
 
     # Download model's metadata
     download_list = create_download_list(model_name, dataset, project)
-    print(f"Download list: {download_list}")
     for item in download_list:
         download_file(IDS[model_name][item], f'{folder_path}/{item}')
 

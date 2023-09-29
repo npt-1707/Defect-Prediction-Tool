@@ -41,7 +41,6 @@ class DeepJIT(BaseHandler):
     def preprocess(self, data):
         if not self.initialized:
             self.initialize()
-        print("Preprocessing...")
 
         commit_info = data['commit_info']
         commit_hashes = []
@@ -77,7 +76,6 @@ class DeepJIT(BaseHandler):
     def inference(self, model_input):
         if not self.initialized:
             self.initialize()
-        print("Inferencing...")
 
         # Forward
         self.model.eval()
@@ -94,7 +92,6 @@ class DeepJIT(BaseHandler):
     def postprocess(self, commit_hashes, inference_output):
         if not self.initialized:
             self.initialize()
-        print("Postprocessing...")
 
         inference_output = inference_output.tolist()
 
@@ -103,7 +100,7 @@ class DeepJIT(BaseHandler):
     def handle(self, data):
         if not self.initialized:
             self.initialize()
-        print("Handling...")
+            
         commit_hashes, preprocessed_data = self.preprocess(data)
         model_output = self.inference(preprocessed_data)
         final_prediction = self.postprocess(commit_hashes, model_output)
