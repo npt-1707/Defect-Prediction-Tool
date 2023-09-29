@@ -18,7 +18,7 @@ def read_args():
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     parser.add_argument('-repo', type=str, default='', help='path to git repo')
-    parser.add_argument('-commit_hash', type=str, default='HEAD', help='commit hash')
+    parser.add_argument('-commit_hash', nargs='+', type=str, default=['HEAD'], help='list of commit hashes')
     available_languages = ["Python", "Java", "C++", "C", "C#", "JavaScript", "TypeScript", "Ruby", "PHP", "Go", "Swift"]
     parser.add_argument('-main_language', type=str, default='', choices=available_languages, help='Main language of repo')
     
@@ -155,9 +155,11 @@ def main():
         
     extractor = RepositoryExtractor()
     extractor.config_repo(Namespace(**extract_config))
-    commits, features = extractor.get_commits([params.commit_hash])
-    user_input["features"] = features[0]
-    user_input["commit_info"] = commit_to_info(commits[0])
+    commits, features = extractor.get_commits(params.commit_hash)
+    user_input["features"] = features
+    user_input["commit_info"] = []
+    for i in range(len(params.commit_hash)):
+        user_input["commit_info"].append(commit_to_info(commits[i]))
     #-----THANH-------
     
     print(json.dumps(user_input, indent=4))
