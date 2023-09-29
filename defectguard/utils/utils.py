@@ -133,7 +133,7 @@ def commit_to_info(commit):
     
     return {
             'commit_hash': commit["commit_id"],
-            'commit_message': commit['commit_msg'],
+            'commit_message': commit['msg'],
             'main_language_file_changes': list_file_changes,
             'num_added_lines_in_main_language': num_added_lines,
         }

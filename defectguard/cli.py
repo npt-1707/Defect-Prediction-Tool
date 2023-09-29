@@ -8,6 +8,7 @@ from .models.simcom.handler import SimCom
 from .models.lapredict.handler import LAPredict
 from .models.tlel.handler import TLEL
 from .models.jitline.handler import JITLine
+from argparse import Namespace
 
 __version__ = "0.1.0"
 
@@ -153,7 +154,7 @@ def main():
     extract_config["to_csv"]=False        
         
     extractor = RepositoryExtractor()
-    extractor.config_repo(**extract_config)
+    extractor.config_repo(Namespace(**extract_config))
     commits, features = extractor.get_commits([params.commit_hash])
     user_input["features"] = features[0]
     user_input["commit_info"] = commit_to_info(commits[0])
