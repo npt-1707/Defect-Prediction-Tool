@@ -1,4 +1,4 @@
-import argparse, os, getpass, sys
+import argparse, os, getpass, sys, time, json
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
 from .utils.utils import commit_to_info
@@ -79,6 +79,9 @@ def init_model(model_name, dataset, cross, device):
 
 
 def main():
+    logger.info("Start DefectGuard")
+    start_whole_process_time = time.time()
+
     params = read_args().parse_args()
 
     user_input = {
@@ -132,6 +135,8 @@ def main():
     # Extract info from user's repo
 
     #-----THANH-------
+    start_extract_time = time.time()
+
     save_path = os.path.join(sys.path[0], "auto_extract/save")
     if not os.path.exists(save_path):
         os.makedirs(save_path)
@@ -145,6 +150,8 @@ def main():
     user_input["commit_info"] = []
     for i in range(len(params.commit_hash)):
         user_input["commit_info"].append(commit_to_info(commits[i]))
+
+    end_extract_time = time.time()
     #-----THANH-------
 
     # Load Model
@@ -155,6 +162,19 @@ def main():
     # Inference
     outputs = {}
     for model in model_list.keys():
+        start_inference_time = time.time()
+
         outputs[model] = model_list[model].handle(user_input)
+
+        end_inference_time = time.time()
+
+        logger.info(f"Inference time of {model}: {end_inference_time - start_inference_time}")
+
+
+    end_whole_process_time = time.time()
+
+    logger.info(f"Extract features time: {end_extract_time - start_extract_time}")
+    logger.info(f"Whole process time: {end_whole_process_time - start_whole_process_time}")
+    logger.info(f"Final output: {json.dumps(outputs, indent=2)}")
 
     print(outputs)
