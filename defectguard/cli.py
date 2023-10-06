@@ -14,25 +14,23 @@ __version__ = "0.1.0"
 
 def read_args():
     available_languages = ["Python", "Java", "C++", "C", "C#", "JavaScript", "TypeScript", "Ruby", "PHP", "Go", "Swift"]
-    models = ['deepjit', 'cc2vec', 'simcom', 'codebert_cc2vec', 'lapredict', 'earl', 'tlel', 'jitline']
+    models = ['deepjit', 'cc2vec', 'simcom', 'lapredict', 'tlel', 'jitline']
     dataset = ['gerrit', 'go', 'platform', 'jdt', 'qt', 'openstack']
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
-    parser.add_argument('-repo', type=str, default='', help='Path to git repo')
+    parser.add_argument('-repo', type=str, default='', help='Path to git repository')
     parser.add_argument('-commit_hash', nargs='+', type=str, default=['HEAD'], help='List of commit hashes')
     parser.add_argument('-main_language', type=str, default='', choices=available_languages, help='Main language of repo')
     
-    parser.add_argument('-commit', type=str, default='', help='commit link')
+    parser.add_argument('-github_link', type=str, default='', help='GitHub link')
 
     parser.add_argument('-models', nargs='+', type=str, default=[], choices=models, help='List of deep learning models')
     parser.add_argument('-dataset', type=str, default='openstack', choices=dataset, help='Dataset\'s name')
     parser.add_argument('-cross', action='store_true', help='Cross project')
 
-    parser.add_argument('-device', type=str, default='cpu', help='Ex: cpu, cuda, cuda:1')
-
-    parser.add_argument('-debug', action='store_true', help='Allow debug print')
+    parser.add_argument('-device', type=str, default='cpu', help='Eg: cpu, cuda, cuda:1')
 
     return parser
 
