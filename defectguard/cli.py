@@ -9,6 +9,7 @@ from .models.lapredict.handler import LAPredict
 from .models.tlel.handler import TLEL
 from .models.jitline.handler import JITLine
 from argparse import Namespace
+from .utils.logger import logger
 
 __version__ = "0.1.0"
 
@@ -88,13 +89,13 @@ def main():
     }
     
     # User's input handling
-    if params.commit == '' and params.repo == '':
+    if params.github_link == '' and params.repo == '':
         raise Exception("-commit, -repo, atleast one of these is required")
 
-    if params.commit != '':
-        parsed_url = urlparse(params.commit)
+    if params.github_link != '':
+        parsed_url = urlparse(params.github_link)
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
-            user_input['link_commit'] = params.commit
+            user_input['link_commit'] = params.github_link
             if not os.path.exists("github_access_token.txt"):
                 password = getpass.getpass("Enter your GitHub access token: ")
                 file_name = "github_access_token.txt"
@@ -105,7 +106,7 @@ def main():
                 with open("github_access_token.txt", "r") as f:
                     user_input['access_token'] = f.read().strip()
         else:
-            raise Exception(f'{params.commit} not a GitHub commit link')
+            raise Exception(f'{params.github_link} not a GitHub commit link')
         
         owner, repo_name = parsed_url.path[:parsed_url.path.find('/commit/')].split('/')[1:3]
         
