@@ -17,3 +17,4 @@ build-publish-test.sh
 dvc-add.sh
 remove-files.sh
 metadata
+logs
