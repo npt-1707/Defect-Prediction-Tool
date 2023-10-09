@@ -34,7 +34,7 @@ jobs:
     - name: Change directory to DefectGuard
       run: |
         cd DefectGuard-the-Package
-        git log —pretty=format:%H
+        git log --pretty=format:%H
     - name: Set up User
       run: |
         git config user.name manhlamabc123
