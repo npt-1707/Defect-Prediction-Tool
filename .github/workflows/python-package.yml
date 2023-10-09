@@ -20,20 +20,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Clone GuillaumeFalourd/poc-github-actions PUBLIC repository
-      uses: GuillaumeFalourd/clone-github-repo-action@v2.2
-      with:
-        depth: 1
-        branch: 'main'
-        owner: 'manhlamabc123'
-        repository: 'DefectGuard-the-Package'
-    - name: Change directory to DefectGuard
-      run: |
-        cd DefectGuard-the-Package
+    - name: Check git log
+      uses: |
         git log --pretty=format:%H
     - name: Set up User
       run: |
