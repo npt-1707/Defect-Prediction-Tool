@@ -37,4 +37,4 @@ jobs:
         defectguard --version
     - name: Run DefectGuard
       run: |
-        Defectguard -models deepjit -dataset platform -repo . -commit_hash commit 4f60b59efa6aba1ee4504c643cad28b082e78417 commit 4fb5c8662097b92d9f2bf9982d276e11581e554a -main_language Python
+        defectguard -models deepjit -dataset platform -repo . -commit_hash commit 4f60b59efa6aba1ee4504c643cad28b082e78417 commit 4fb5c8662097b92d9f2bf9982d276e11581e554a -main_language Python
