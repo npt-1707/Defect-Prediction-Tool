@@ -14,9 +14,9 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,6 +32,9 @@ jobs:
     - name: Install DefectGuard
       run: |
         pip install -i https://test.pypi.org/simple/ defectguard==0.1.26
-    - name: Check DefeectGuard Version
+    - name: Check DefectGuard Version
       run: |
         defectguard --version
+    - name: Run DefectGuard
+      run: |
+        Defectguard -models deepjit -dataset platform -repo . -commit_hash commit 4f60b59efa6aba1ee4504c643cad28b082e78417 commit 4fb5c8662097b92d9f2bf9982d276e11581e554a -main_language Python
