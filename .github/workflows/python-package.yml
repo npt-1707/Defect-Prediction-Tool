@@ -31,6 +31,10 @@ jobs:
         branch: 'main'
         owner: 'manhlamabc123'
         repository: 'DefectGuard-the-Package'
+    - name: Change directory to DefectGuard
+      run: |
+        cd DefectGuard-the-Package
+        ls
     - name: Set up User
       run: |
         git config user.name manhlamabc123
