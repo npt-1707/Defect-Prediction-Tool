@@ -253,6 +253,7 @@ class RepositoryExtractor:
 
     def extract_one_commit_features(self, commit_id):
         commit = self.repo["commits"][commit_id]
+        print(commit)
         commit_date = commit["date"]
         commit_message = commit["msg"]
         commit_author = commit["author"]
