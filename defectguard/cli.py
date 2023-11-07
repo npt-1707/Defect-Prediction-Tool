@@ -21,6 +21,12 @@ def read_args():
 
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
+    parser.add_argument('-train', action='store_true', help='Training mode')
+    parser.add_argument('-hyperparams', type=str, default='', help='Path to .json that contains hyperparameters info')
+    parser.add_argument('-train_data', type=str, default='', help='Path to .pkl that contains training data')
+
+    parser.add_argument('-predict', action='store_true', help='Predict mode')
+
     parser.add_argument('-repo', type=str, default='', help='Path to git repository')
     parser.add_argument('-commit_hash', nargs='+', type=str, default=['HEAD'], help='List of commit hashes')
     parser.add_argument('-main_language', type=str, default='', choices=available_languages, help='Main language of repo')
@@ -85,16 +91,17 @@ def main():
     params = read_args().parse_args()
 
     user_input = {
+        'train': params.train,
+        'predict': params.predict,
         "models": params.models,
         'dataset': params.dataset,
         'cross': params.cross,
         "device": params.device
     }
+
+    logger.info(user_input)
     
     # User's input handling
-    if params.github_link == '' and params.repo == '':
-        raise Exception("-commit, -repo, atleast one of these is required")
-
     if params.github_link != '':
         parsed_url = urlparse(params.github_link)
         if parsed_url.hostname == 'github.com' and '/commit/' in parsed_url.path:
@@ -132,27 +139,27 @@ def main():
             "main_language": params.main_language,
         }
 
-    # Extract info from user's repo
+        # Extract info from user's repo
 
-    #-----THANH-------
-    start_extract_time = time.time()
+        #-----THANH-------
+        start_extract_time = time.time()
 
-    save_path = os.path.join(sys.path[0], "auto_extract/save")
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-    extract_config["save_path"]=save_path
-    extract_config["to_csv"]=False        
-        
-    extractor = RepositoryExtractor()
-    extractor.config_repo(Namespace(**extract_config))
-    commits, features = extractor.get_commits(params.commit_hash)
-    user_input["features"] = features
-    user_input["commit_info"] = []
-    for i in range(len(params.commit_hash)):
-        user_input["commit_info"].append(commit_to_info(commits[i]))
+        save_path = os.path.join(sys.path[0], "auto_extract/save")
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        extract_config["save_path"]=save_path
+        extract_config["to_csv"]=False        
+            
+        extractor = RepositoryExtractor()
+        extractor.config_repo(Namespace(**extract_config))
+        commits, features = extractor.get_commits(params.commit_hash)
+        user_input["features"] = features
+        user_input["commit_info"] = []
+        for i in range(len(params.commit_hash)):
+            user_input["commit_info"].append(commit_to_info(commits[i]))
 
-    end_extract_time = time.time()
-    #-----THANH-------
+        end_extract_time = time.time()
+        #-----THANH-------
 
     # Load Model
     model_list = {}
