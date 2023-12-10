@@ -5,8 +5,6 @@ from github import Github
 from tqdm import tqdm
 from .utils.utils import *
 import datetime
-import sys
-from defectguard.utils.utils import SRC_PATH
 
 
 class RepositoryExtractor:
@@ -127,7 +125,7 @@ class RepositoryExtractor:
         g = Github(github_token)
         repo = g.get_repo(f"{config.github_owner}/{config.github_repo}")
         clone_url = repo.clone_url
-        clone_path = os.path.join(SRC_PATH, "metadat/repo")
+        clone_path = os.path.join(self.cfg["save_path"], "metadat/repo")
         if not os.path.exists(clone_path):
             os.makedirs(clone_path)
         clone_repo(clone_path, config.github_repo, clone_url)

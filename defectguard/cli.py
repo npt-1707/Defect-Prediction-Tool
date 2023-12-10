@@ -115,7 +115,7 @@ def main():
         
         extract_config = {
             "mode": "online",
-            "github_token_path": os.path.join(sys.path[0], "github_access_token.txt"),
+            "github_token_path": os.path.join(params.repo, "github_access_token.txt"),
             "github_owner": owner,
             "github_repo": repo_name,
         }
@@ -137,7 +137,7 @@ def main():
     #-----THANH-------
     start_extract_time = time.time()
 
-    save_path = os.path.join(SRC_PATH, "extractor/metadata")
+    save_path = os.path.join(params.repo, "extractor")
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     extract_config["save_path"]=save_path

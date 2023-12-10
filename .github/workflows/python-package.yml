@@ -41,6 +41,4 @@ jobs:
         run: |
           realpath .
           ls -a
-          find / -type d -name "metadata"
-          find / -type d -name "defectguard"
           defectguard -models deepjit -dataset platform -repo . -commit_hash 4f60b59efa6aba1ee4504c643cad28b082e78417 -main_language Python
