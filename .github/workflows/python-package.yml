@@ -39,6 +39,5 @@ jobs:
       - name: Run DefectGuard
         run: |
           realpath .
-          ls
-          git log --pretty=format:%H
+          ls -a
           defectguard -models deepjit -dataset platform -repo . -commit_hash 4f60b59efa6aba1ee4504c643cad28b082e78417 -main_language Python
