@@ -16,7 +16,10 @@ class DeepJIT(BaseHandler):
         self.code_dictionary = None
         self.parameters = None
         download_folder(self.model_name, self.dataset, self.project)
-        
+
+    def __call__(self, message, code):
+        return self.model(message, code)
+    
     def initialize(self):
         # Load dictionary
         dictionary = pickle.load(open(f"{SRC_PATH}/models/metadata/{self.model_name}/{self.dataset}_dictionary_{self.project}", 'rb'))

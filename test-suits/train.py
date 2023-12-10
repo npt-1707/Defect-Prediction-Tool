@@ -29,30 +29,28 @@ class CustomDataset(Dataset):
             'labels': labels
         }
 
-# Open the .pkl file for reading
 with open('/home/manh/Documents/DefectGuard/Data/bootstrap_part_5_dextend.pkl', 'rb') as file:
     loaded_data = pickle.load(file)
 
-# Now you can work with the loaded data
 ids, messages, commits, labels = loaded_data
 
 dictionary = pickle.load(open('/home/manh/Documents/DefectGuard/Data/bootstrap_part_5_dict.pkl', 'rb'))   
 dict_msg, dict_code = dictionary
 
+# ---------------------- DefectGuard -------------------------------
 model = DeepJIT(device='cuda')
 model.initialize()
+# ------------------------------------------------------------------
 
 pad_msg = padding_data(data=messages, dictionary=dict_msg, params=model.parameters, type='msg')        
 pad_code = padding_data(data=commits, dictionary=dict_code, params=model.parameters, type='code')
 
-# Using Pytorch Dataset and DataLoader
 code_dataset = CustomDataset(ids, pad_code, pad_msg, labels)
 code_dataloader = DataLoader(code_dataset, batch_size=model.parameters['batch_size'])
 
 optimizer = torch.optim.Adam(model.model.parameters(), lr=5e-5)
 criterion = nn.BCELoss()
 
-# Training
 for epoch in range(1, 10 + 1):
     total_loss = 0
     for batch in code_dataloader:
@@ -63,10 +61,10 @@ for epoch in range(1, 10 + 1):
         
         optimizer.zero_grad()
 
-        # Forward
-        predict = model.model(message, code)
-
-        # Calculate loss
+        # ---------------------- DefectGuard -------------------------------
+        predict = model(message, code)
+        # ------------------------------------------------------------------
+        
         loss = criterion(predict, labels)
 
         loss.backward()
