@@ -10,6 +10,7 @@ from .models.tlel.warper import TLEL
 from .models.jitline.warper import JITLine
 from argparse import Namespace
 from .utils.logger import logger
+from defectguard.utils.utils import SRC_PATH
 
 __version__ = "0.1.0"
 
@@ -136,7 +137,7 @@ def main():
     #-----THANH-------
     start_extract_time = time.time()
 
-    save_path = os.path.join(sys.path[0], "auto_extract/save")
+    save_path = os.path.join(SRC_PATH, "extractor/metadata")
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     extract_config["save_path"]=save_path
