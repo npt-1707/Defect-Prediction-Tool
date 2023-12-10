@@ -6,6 +6,7 @@ from tqdm import tqdm
 from .utils.utils import *
 import datetime
 import sys
+from defectguard.utils.utils import SRC_PATH
 
 
 class RepositoryExtractor:
@@ -51,8 +52,7 @@ class RepositoryExtractor:
         elif config.mode == "online":
             self.init_online_repo(config)
 
-        save_path = os.path.join(os.path.abspath(config.save_path),
-                                 self.cfg["name"])
+        save_path = os.path.join(config.save_path, self.cfg["name"])
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
@@ -66,8 +66,7 @@ class RepositoryExtractor:
             "files": os.path.join(save_path, "repo_files.pkl"),
         }
 
-        if os.path.exists(save_path) and "commit_ids.pkl" in os.listdir(
-                save_path):
+        if os.path.exists(save_path) and "commit_ids.pkl" in os.listdir(save_path):
             self.load_repo()
         else:
             self.repo = {
@@ -115,8 +114,7 @@ class RepositoryExtractor:
         """
         Config the local repository path
         """
-        self.cfg["name"] = os.path.basename(
-            os.path.normpath(os.path.abspath(config.local_repo_path)))
+        self.cfg["name"] = os.path.basename(os.path.normpath(os.path.abspath(config.local_repo_path)))
         self.cfg["main_language"] = config.main_language
         self.cfg["repo_path"] = os.path.abspath(config.local_repo_path)
 
@@ -129,8 +127,7 @@ class RepositoryExtractor:
         g = Github(github_token)
         repo = g.get_repo(f"{config.github_owner}/{config.github_repo}")
         clone_url = repo.clone_url
-        root = sys.path[0]
-        clone_path = os.path.join(root, "repo")
+        clone_path = os.path.join(SRC_PATH, "metadat/repo")
         if not os.path.exists(clone_path):
             os.makedirs(clone_path)
         clone_repo(clone_path, config.github_repo, clone_url)
@@ -248,8 +245,7 @@ class RepositoryExtractor:
 
         if is_updated:
             save_pkl(self.repo["commits"], self.files["commits"])
-            save_json(self.repo["commits"],
-                      os.path.join(self.cfg["save_path"], "commits.json"))
+            save_json(self.repo["commits"],os.path.join(self.cfg["save_path"], "commits.json"))
 
     def extract_one_commit_features(self, commit_id):
         commit = self.repo["commits"][commit_id]
@@ -352,8 +348,7 @@ class RepositoryExtractor:
             save_pkl(self.repo["features"], self.files["features"])
 
         if to_csv:
-            self.cfg["csv_path"] = os.path.join(self.cfg["save_path"],
-                                                "features.csv")
+            self.cfg["csv_path"] = os.path.join(self.cfg["save_path"], "features.csv")
             self.to_csv()
 
     def to_csv(self):
