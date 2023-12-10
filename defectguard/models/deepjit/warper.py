@@ -1,10 +1,10 @@
-from defectguard.models.BaseHandler import BaseHandler
+from defectguard.models.BaseWraper import BaseWraper
 import pickle, json, torch
 from .model import DeepJITModel
 from defectguard.utils.utils import download_folder, SRC_PATH
 from .utils import *
 
-class DeepJIT(BaseHandler):
+class DeepJIT(BaseWraper):
     def __init__(self, dataset='platform', project='within', device="cpu"):
         self.model_name = 'deepjit'
         self.dataset = dataset

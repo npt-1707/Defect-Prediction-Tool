@@ -2,12 +2,12 @@ import argparse, os, getpass, sys, time, json
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
 from .utils.utils import commit_to_info
-from .models.deepjit.handler import DeepJIT
-from .models.cc2vec.handler import CC2Vec
-from .models.simcom.handler import SimCom
-from .models.lapredict.handler import LAPredict
-from .models.tlel.handler import TLEL
-from .models.jitline.handler import JITLine
+from .models.deepjit.warper import DeepJIT
+from .models.cc2vec.warper import CC2Vec
+from .models.simcom.warper import SimCom
+from .models.lapredict.warper import LAPredict
+from .models.tlel.warper import TLEL
+from .models.jitline.warper import JITLine
 from argparse import Namespace
 from .utils.logger import logger
 

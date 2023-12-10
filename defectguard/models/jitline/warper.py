@@ -1,8 +1,8 @@
-from defectguard.models.BaseHandler import BaseHandler
+from defectguard.models.BaseWraper import BaseWraper
 from .model import JITLineModel
 from defectguard.utils.utils import download_folder, SRC_PATH
 
-class JITLine(BaseHandler):
+class JITLine(BaseWraper):
     def __init__(self, dataset='platform', project='within', device="cpu"):
         self.model_name = 'jitline'
         self.dataset = dataset

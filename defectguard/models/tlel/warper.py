@@ -1,10 +1,11 @@
-from defectguard.models.BaseHandler import BaseHandler
+from defectguard.models.BaseWraper import BaseWraper
 import pickle
+from .TLEL import TLEL
 from defectguard.utils.utils import download_folder, SRC_PATH
 
-class LAPredict(BaseHandler):
+class TLEL(BaseWraper):
     def __init__(self, dataset='platform', project='within', device="cpu"):
-        self.model_name = 'lapredict'
+        self.model_name = 'tlel'
         self.dataset = dataset
         self.project = project
         self.initialized = False

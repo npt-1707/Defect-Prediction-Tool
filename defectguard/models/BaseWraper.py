@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class BaseHandler(ABC):
+class BaseWraper(ABC):
 
     @abstractmethod
     def initialize(self):
