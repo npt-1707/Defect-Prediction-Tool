@@ -97,7 +97,7 @@ class DeepJIT(BaseWraper):
         
         return predict
 
-    def postprocess(self, commit_hashes, inference_output):
+    def postprocess(self, og_commit_hashes, commit_hashes, inference_output):
         if not self.initialized:
             self.initialize()
 
@@ -106,7 +106,7 @@ class DeepJIT(BaseWraper):
         result = []
         for i in range(len(commit_hashes)):
             if commit_hashes[i] == 'Not code change':
-                result.append({'commit_hash': 'Not code change', 'predict': -1})
+                result.append({'commit_hash': og_commit_hashes[i], 'predict': -1})
             else:
                 result.append({'commit_hash': commit_hashes[i], 'predict': inference_output[i]})
 
@@ -118,6 +118,6 @@ class DeepJIT(BaseWraper):
             
         commit_hashes, preprocessed_data = self.preprocess(data)
         model_output = self.inference(preprocessed_data)
-        final_prediction = self.postprocess(commit_hashes, model_output)
+        final_prediction = self.postprocess(data['commit_hashes'], commit_hashes, model_output)
 
         return final_prediction

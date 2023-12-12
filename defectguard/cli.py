@@ -151,6 +151,7 @@ def main():
     else:
         params.commit_hash = extractor.get_top_commits(params.repo, params.top - 1)
         commits, features = extractor.get_commits(params.commit_hash)
+    user_input['commit_hashes'] = params.commit_hash
     user_input["features"] = features
     user_input["commit_info"] = []
     for i in range(len(params.commit_hash)):
