@@ -237,8 +237,9 @@ class RepositoryExtractor:
                 is_updated = True
 
         if self.cfg["mode"] == "local":
-            self.repo["commits"]["uncommit"] = self.check_uncommit()
-            if self.repo["commits"]["uncommit"] is not None:
+            uncommit = self.check_uncommit()
+            if self.repo["commits"]["uncommit"] != uncommit:
+                self.repo["commits"]["uncommit"] = uncommit
                 is_updated = True
 
         if is_updated:
@@ -485,6 +486,7 @@ class RepositoryExtractor:
     
     def get_top_commits(self, repo, top):
         # Change to the repository directory
+        cur_dir = os.getcwd()
         os.chdir(repo)
         
         # Run the Git command and capture the output
@@ -497,3 +499,5 @@ class RepositoryExtractor:
         except subprocess.CalledProcessError as e:
             print(f"Error running Git command: {e}")
             return []
+        finally:
+            os.chdir(cur_dir)
