@@ -51,19 +51,24 @@ class DeepJIT(BaseWraper):
         codes = []
 
         for commit in commit_info:
-            commit_hashes.append(commit['commit_hash'])
+            if commit:
+                commit_hashes.append(commit['commit_hash'])
 
-            # Extract commit message
-            commit_message = commit['commit_message'].strip()
-            commit_message = split_sentence(commit_message)
-            commit_message = ' '.join(commit_message.split(' ')).lower()
-            
-            commit = commit['main_language_file_changes']
+                # Extract commit message
+                commit_message = commit['commit_message'].strip()
+                commit_message = split_sentence(commit_message)
+                commit_message = ' '.join(commit_message.split(' ')).lower()
+                
+                commit = commit['main_language_file_changes']
 
-            code = hunks_to_code(commit)
+                code = hunks_to_code(commit)
 
-            commit_messages.append(commit_message)
-            codes.append(code)
+                commit_messages.append(commit_message)
+                codes.append(code)
+            else:
+                commit_hashes.append('Not code change')
+                commit_messages.append('')
+                codes.append([])
 
         pad_msg = padding_data(data=commit_messages, dictionary=self.message_dictionary, params=self.parameters, type='msg')        
         pad_code = padding_data(data=codes, dictionary=self.code_dictionary, params=self.parameters, type='code')
@@ -98,7 +103,14 @@ class DeepJIT(BaseWraper):
 
         inference_output = inference_output.tolist()
 
-        return [{'commit_hash': commit_hashes[i], 'predict': inference_output[i]} for i in range(len(commit_hashes))]
+        result = []
+        for i in range(len(commit_hashes)):
+            if commit_hashes[i] == 'Not code change':
+                result.append({'commit_hash': 'Not code change', 'predict': -1})
+            else:
+                result.append({'commit_hash': commit_hashes[i], 'predict': inference_output[i]})
+
+        return result
 
     def handle(self, data):
         if not self.initialized:

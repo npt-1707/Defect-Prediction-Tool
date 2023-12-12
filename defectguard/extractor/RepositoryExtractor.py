@@ -416,11 +416,11 @@ class RepositoryExtractor:
         features = []
         for commit_id in commit_ids:
             if commit_id not in self.repo["commits"]:
-                raise Exception(
-                    f"Commit id {commit_id} not found in extractor {self.cfg.path['commits']}"
-                )
-            infos.append(self.repo["commits"][commit_id])
-            features.append(self.repo["features"][commit_id])
+                infos.append({})
+                features.append({})
+            else:
+                infos.append(self.repo["commits"][commit_id])
+                features.append(self.repo["features"][commit_id])
 
         return infos, features
 
