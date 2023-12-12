@@ -22,7 +22,8 @@ def read_args():
     parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     parser.add_argument('-repo', type=str, default='', help='Path to git repository')
-    parser.add_argument('-commit_hash', nargs='+', type=str, default=['HEAD'], help='List of commit hashes')
+    parser.add_argument('-commit_hash', nargs='+', type=str, default=[], help='List of commit hashes')
+    parser.add_argument('-top', type=int, default=0, help='Number of top commits')
     parser.add_argument('-main_language', type=str, default='', choices=available_languages, help='Main language of repo')
     
     parser.add_argument('-github_link', type=str, default='', help='GitHub link')
@@ -120,11 +121,12 @@ def main():
         }
 
     if params.repo != '':
-        if params.commit_hash == '':
-            raise Exception(f'Commit hash is required')
         if params.main_language == '':
             raise Exception(f"Repository's main language is required")
-        
+        if params.top == 0 and len(params.commit_hash) == 0:
+            raise Exception(f"-top or -commit_hash is required")
+        if params.top > 0 and len(params.commit_hash) > 0:
+            raise Exception(f"-top and -commit_hash cannot be used at the same time")
         extract_config = {
             "mode": "local",
             "local_repo_path": params.repo,
@@ -144,7 +146,11 @@ def main():
         
     extractor = RepositoryExtractor()
     extractor.config_repo(Namespace(**extract_config))
-    commits, features = extractor.get_commits(params.commit_hash)
+    if len(params.commit_hash) > 0:
+        commits, features = extractor.get_commits(params.commit_hash)
+    else:
+        params.commit_hash = extractor.get_top_commits(params.repo, params.top - 1)
+        commits, features = extractor.get_commits(params.commit_hash)
     user_input["features"] = features
     user_input["commit_info"] = []
     for i in range(len(params.commit_hash)):
@@ -153,27 +159,29 @@ def main():
     end_extract_time = time.time()
     #-----THANH-------
 
-    # Load Model
-    model_list = {}
-    for model in params.models:
-        model_list[model] = init_model(model, params.dataset, params.cross, params.device)
+    if len(user_input["commit_info"]) > 0:
 
-    # Inference
-    outputs = {}
-    for model in model_list.keys():
-        start_inference_time = time.time()
+        # Load Model
+        model_list = {}
+        for model in params.models:
+            model_list[model] = init_model(model, params.dataset, params.cross, params.device)
 
-        outputs[model] = model_list[model].handle(user_input)
+        # Inference
+        outputs = {}
+        for model in model_list.keys():
+            start_inference_time = time.time()
 
-        end_inference_time = time.time()
+            outputs[model] = model_list[model].handle(user_input)
 
-        logger.info(f"Inference time of {model}: {end_inference_time - start_inference_time}")
+            end_inference_time = time.time()
 
+            logger.info(f"Inference time of {model}: {end_inference_time - start_inference_time}")
+
+        logger.info(f"Final output: {json.dumps(outputs, indent=2)}")
+
+        print(outputs)
 
     end_whole_process_time = time.time()
 
     logger.info(f"Extract features time: {end_extract_time - start_extract_time}")
     logger.info(f"Whole process time: {end_whole_process_time - start_whole_process_time}")
-    logger.info(f"Final output: {json.dumps(outputs, indent=2)}")
-
-    print(outputs)

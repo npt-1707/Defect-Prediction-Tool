@@ -482,3 +482,18 @@ class RepositoryExtractor:
             "blame": commit_blame,
         }
         return commit
+    
+    def get_top_commits(self, repo, top):
+        # Change to the repository directory
+        os.chdir(repo)
+        
+        # Run the Git command and capture the output
+        command = ["git", "log", "--all", "--no-decorate", "--no-merges", "--pretty=format:%H", "-n", f'{top}']
+        try:
+            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+            output = ['uncommit']
+            output += result.stdout.strip().split('\n')
+            return output
+        except subprocess.CalledProcessError as e:
+            print(f"Error running Git command: {e}")
+            return []
