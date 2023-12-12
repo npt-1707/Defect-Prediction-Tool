@@ -28,18 +28,14 @@ jobs:
       - name: Set up User
         run: |
           git config user.name manhlamabc123
-      # - name: Install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     python -m pip install numpy pandas PyGithub Requests tqdm scikit-learn torch imblearn scipy gdown
-      #     if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      # - name: Install DefectGuard
-      #   run: |
-      #     pip install -i https://test.pypi.org/simple/ defectguard==0.1.26
-      #     defectguard --version
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pandas PyGithub Requests tqdm scikit-learn torch imblearn scipy gdown
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Install DefectGuard
+        run: |
+          pip install -i https://test.pypi.org/simple/ defectguard==0.1.26
       - name: Run DefectGuard
         run: |
-          realpath .
-          sudo chmod u+w .
-          ls -la
           defectguard -models deepjit -dataset platform -repo . -commit_hash 4f60b59efa6aba1ee4504c643cad28b082e78417 -main_language Python
