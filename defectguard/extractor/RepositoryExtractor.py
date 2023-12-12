@@ -60,15 +60,15 @@ class RepositoryExtractor:
             "ids": os.path.join(save_path, "commit_ids.pkl"),
             "commits": os.path.join(save_path, "repo_commits.pkl"),
             "features": os.path.join(save_path, "repo_features.pkl"),
-            "authors": os.path.join(save_path, "repo_authors.pkl"),
-            "files": os.path.join(save_path, "repo_files.pkl"),
+            # "authors": os.path.join(save_path, "repo_authors.pkl"),
+            # "files": os.path.join(save_path, "repo_files.pkl"),
         }
 
         if os.path.exists(save_path) and "commit_ids.pkl" in os.listdir(save_path):
             self.load_repo()
         else:
             self.repo = {
-                "ids": [],
+                "ids": {},
                 "commits": {},
                 "features": {},
                 "authors": {},
@@ -82,16 +82,13 @@ class RepositoryExtractor:
         """
         cur_dir = os.getcwd()
         os.chdir(self.cfg["repo_path"])
-        self.repo["ids"] = get_commit_hashes(self.cfg["date"])[::-1]
-        self.head = self.repo["ids"][-1]
-
-        if self.head not in self.repo["commits"]:
-            self.extract_repo_commits_info()
-            self.extract_repo_commits_features(to_csv=to_csv)
-
-        if self.cfg["mode"] == "local":
-            self.check_uncommit()
-
+        ids = get_commit_hashes(self.cfg["date"])[::-1]
+        for id in ids:
+            if id not in self.repo["ids"]:
+                self.repo["ids"][id] = -1
+        
+        self.extract_repo_commits_info()
+        self.extract_repo_commits_features(to_csv=to_csv)
         os.chdir(cur_dir)
 
         save_pkl(self.repo["ids"], self.files["ids"])
@@ -104,8 +101,8 @@ class RepositoryExtractor:
         self.repo = {
             "commits": load_pkl(self.files["commits"]),
             "features": load_pkl(self.files["features"]),
-            "authors": load_pkl(self.files["authors"]),
-            "files": load_pkl(self.files["files"]),
+            # "authors": load_pkl(self.files["authors"]),
+            # "files": load_pkl(self.files["files"]),
         }
 
     def init_local_repo(self, config):
@@ -227,24 +224,22 @@ class RepositoryExtractor:
             languages = [self.cfg["main_language"]]
         else:
             languages = []
-        is_updated = False
         for commit_id in tqdm(self.repo["ids"]):
-            if commit_id not in self.repo["commits"]:
+            if self.repo["ids"][commit_id] == -1:
                 commit = self.extract_one_commit_info(commit_id, languages)
                 if not commit["diff"]:
                     continue
                 self.repo["commits"][commit_id] = commit
-                is_updated = True
+                self.repo["ids"][commit_id] = 1
 
         if self.cfg["mode"] == "local":
             uncommit = self.check_uncommit()
-            if self.repo["commits"]["uncommit"] != uncommit:
+            if not uncommit["diff"]:
                 self.repo["commits"]["uncommit"] = uncommit
-                is_updated = True
 
-        if is_updated:
-            save_pkl(self.repo["commits"], self.files["commits"])
-            save_json(self.repo["commits"],os.path.join(self.cfg["save_path"], "commits.json"))
+        save_pkl(self.repo["commits"], self.files["commits"])
+        # debug file
+        save_json(self.repo["commits"],os.path.join(self.cfg["save_path"], "commits.json"))
 
     def extract_one_commit_features(self, commit_id):
         commit = self.repo["commits"][commit_id]
@@ -326,25 +321,17 @@ class RepositoryExtractor:
         return feature
 
     def extract_repo_commits_features(self, to_csv=False):
-        is_updated = False
         for commit_id in tqdm(self.repo["commits"]):
-            if commit_id not in self.repo["features"]:
-                k_features = self.extract_one_commit_features(commit_id)
-                self.repo["features"][commit_id] = k_features
-                is_updated = True
-
-        if self.cfg["mode"] == "local":
-            if self.repo["commits"]["uncommit"] is not None:
+            if commit_id == "uncommit":
                 self.repo["features"][
                     "uncommit"] = self.extract_one_commit_features("uncommit")
-                is_update = True
-            else:
-                self.repo["features"]["uncommit"] = None
+            elif commit_id not in self.repo["features"]:
+                k_features = self.extract_one_commit_features(commit_id)
+                self.repo["features"][commit_id] = k_features
 
-        if is_updated:
-            save_pkl(self.repo["files"], self.files["files"])
-            save_pkl(self.repo["authors"], self.files["authors"])
-            save_pkl(self.repo["features"], self.files["features"])
+        # save_pkl(self.repo["files"], self.files["files"])
+        # save_pkl(self.repo["authors"], self.files["authors"])
+        save_pkl(self.repo["features"], self.files["features"])
 
         if to_csv:
             self.cfg["csv_path"] = os.path.join(self.cfg["save_path"], "features.csv")
@@ -488,7 +475,7 @@ class RepositoryExtractor:
         # Change to the repository directory
         cur_dir = os.getcwd()
         os.chdir(repo)
-        
+        output = []
         # Run the Git command and capture the output
         command = ["git", "log", "--all", "--no-decorate", "--no-merges", "--pretty=format:%H", "-n", f'{top}']
         try:
@@ -498,6 +485,6 @@ class RepositoryExtractor:
             return output
         except subprocess.CalledProcessError as e:
             print(f"Error running Git command: {e}")
-            return []
         finally:
             os.chdir(cur_dir)
+        return output
