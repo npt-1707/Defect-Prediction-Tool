@@ -16,3 +16,4 @@ dvc-add.sh
 remove-files.sh
 metadata
 logs
+test.ipynb
