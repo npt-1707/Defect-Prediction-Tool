@@ -1,4 +1,4 @@
-import argparse, os, getpass, sys, time, json
+import argparse, os, getpass, time, json
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
 from .utils.utils import commit_to_info
@@ -10,7 +10,6 @@ from .models.tlel.warper import TLEL
 from .models.jitline.warper import JITLine
 from argparse import Namespace
 from .utils.logger import logger
-from defectguard.utils.utils import SRC_PATH
 
 __version__ = "0.1.0"
 
