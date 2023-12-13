@@ -71,8 +71,6 @@ class RepositoryExtractor:
                 "ids": {},
                 "commits": {},
                 "features": {},
-                "authors": {},
-                "files": {},
             }
         self.run()
 
@@ -99,6 +97,7 @@ class RepositoryExtractor:
         Load existed files
         """
         self.repo = {
+            "ids": load_pkl(self.files["ids"]),
             "commits": load_pkl(self.files["commits"]),
             "features": load_pkl(self.files["features"]),
             # "authors": load_pkl(self.files["authors"]),
@@ -236,6 +235,8 @@ class RepositoryExtractor:
             uncommit = self.check_uncommit()
             if not uncommit["diff"]:
                 self.repo["commits"]["uncommit"] = uncommit
+            else:
+                self.repo["commits"]["uncommit"] = None
 
         save_pkl(self.repo["commits"], self.files["commits"])
         # debug file
@@ -321,10 +322,14 @@ class RepositoryExtractor:
         return feature
 
     def extract_repo_commits_features(self, to_csv=False):
+        self.repo["authors"] = {}
+        self.repo["files"] = {}
         for commit_id in tqdm(self.repo["commits"]):
             if commit_id == "uncommit":
-                self.repo["features"][
-                    "uncommit"] = self.extract_one_commit_features("uncommit")
+                if self.repo["commits"]["uncommit"] is not None:
+                    self.repo["features"]["uncommit"] = self.extract_one_commit_features("uncommit")
+                else:
+                    self.repo["features"]["uncommit"] = None
             elif commit_id not in self.repo["features"]:
                 k_features = self.extract_one_commit_features(commit_id)
                 self.repo["features"][commit_id] = k_features
