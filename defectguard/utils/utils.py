@@ -52,6 +52,24 @@ def sort_by_predict(commit_list):
     sorted_list = sorted(commit_list, key=lambda x: x['predict'], reverse=True)
     return sorted_list
 
+def vsc_output(data):
+    # Extract the commit hashes from "no_code_change_commit"
+    no_code_change_commits = data.get("no_code_change_commit", [])
+    
+    # Extract the "deepjit" list
+    deepjit_list = data.get("deepjit", [])
+    
+    # Create a dictionary with keys from "no_code_change_commit" and values as -1
+    new_dict = [{'commit_hash': commit, 'predict': -1} for commit in no_code_change_commits]
+    
+    # Append the new dictionary to the "deepjit" list
+    deepjit_list += (new_dict)
+    
+    # Update the "deepjit" key in the original data
+    data["deepjit"] = deepjit_list
+
+    return data
+
 def create_download_list(model_name, dataset, project):
     download_list = []
     dictionary = f'{dataset}_dictionary_{project}'

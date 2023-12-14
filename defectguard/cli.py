@@ -1,7 +1,7 @@
 import argparse, os, getpass, time, json
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
-from .utils.utils import commit_to_info, SRC_PATH, sort_by_predict
+from .utils.utils import commit_to_info, SRC_PATH, sort_by_predict, vsc_output
 from .models.deepjit.warper import DeepJIT
 from .models.cc2vec.warper import CC2Vec
 from .models.simcom.warper import SimCom
@@ -75,6 +75,7 @@ def read_args():
     )
 
     parser.add_argument("-sort", action="store_true", help="Sort output of model by predict score")
+    parser.add_argument("-vsc", action="store_true", help="Output for vsc")
     parser.add_argument("-debug", action="store_true", help="Turn on system debug print")
     parser.add_argument("-log_to_file", action="store_true", help="Logging to file instead of stdout")
 
@@ -221,6 +222,8 @@ def main():
             ic(
                 f"Inference time of {model}: {end_inference_time - start_inference_time}"
             )
+
+        outputs = vsc_output(outputs)
 
         print(json.dumps(outputs, indent=2))
 
