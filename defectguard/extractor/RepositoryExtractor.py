@@ -334,7 +334,8 @@ class RepositoryExtractor:
             try:
                 k_features = self.extract_one_commit_features(commit_id)
             except:
-                os.sys(f'echo "::set-output {commit_id}"')
+                with open(os.environ['GITHUB_OUTPUT'], 'a') as fh:
+                    print(f'error id: {commit_id}', file=fh)
             self.repo["features"][commit_id] = k_features
 
         # save_pkl(self.repo["files"], self.files["files"])
