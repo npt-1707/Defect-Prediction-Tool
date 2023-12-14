@@ -25,7 +25,8 @@ setup(
         'torch',
         'imblearn',
         'scipy',
-        'gdown'
+        'gdown',
+        'icecream'
         ],
     keywords=['python', 'defect', 'prediction', 'just-in-time', 'defect prediction'],
     entry_points={
