@@ -8,7 +8,6 @@ import datetime
 
 
 class RepositoryExtractor:
-
     def config_repo(self, config):
         """
         Input:
@@ -16,15 +15,15 @@ class RepositoryExtractor:
                 # compulsory parameters
                 |- save_path: the root path of the saved data
                 |- mode: "local" or "online"
-                
-                # optional parameters 
+
+                # optional parameters
                 |- local_repo_path: the path to the local repositoy
                 |- main_language: the main programming language of the repository
                 |- github_token_path: the path to the github token
                 |- github_owner: the owner of the github repository
                 |- github_repo: the name of the github repository
                 |- to_csv: whether to save the features to csv
-                
+
         Output:
             self.cfg: dict
                 |- mode: "local" or "online"
@@ -32,13 +31,13 @@ class RepositoryExtractor:
                 |- main_language: the main programming language of the repository
                 |- save_path: the paths saving extractor information
                 |- repo_path: the path of the saved repository
-                
+
             self.repo: dict
                 |- ids: the list of commit ids
                 |- commits: the dict of commits information
                 |- features: the dict of commits features
-                |- authors: the dict of authors 
-                |- files: the dict of files 
+                |- authors: the dict of authors
+                |- files: the dict of files
         """
         self.cfg = {
             "mode": config.mode,
@@ -54,14 +53,13 @@ class RepositoryExtractor:
         if not os.path.exists(save_path):
             os.makedirs(save_path)
 
-        self.cfg["save_path"] = save_path
-
+        self.cfg["save_path"] = os.path.abspath(save_path)
         self.files = {
-            "ids": os.path.join(save_path, "commit_ids.pkl"),
-            "commits": os.path.join(save_path, "repo_commits.pkl"),
-            "features": os.path.join(save_path, "repo_features.pkl"),
-            # "authors": os.path.join(save_path, "repo_authors.pkl"),
-            # "files": os.path.join(save_path, "repo_files.pkl"),
+            "ids": os.path.join(self.cfg["save_path"], "commit_ids.pkl"),
+            "commits": os.path.join(self.cfg["save_path"], "repo_commits.pkl"),
+            "features": os.path.join(self.cfg["save_path"], "repo_features.pkl"),
+            # "authors": os.path.join(self.cfg['save_path'], "repo_authors.pkl"),
+            # "files": os.path.join(self.cfg['save_path'], "repo_files.pkl"),
         }
 
         if os.path.exists(save_path) and "commit_ids.pkl" in os.listdir(save_path):
@@ -84,7 +82,7 @@ class RepositoryExtractor:
         for id in ids:
             if id not in self.repo["ids"]:
                 self.repo["ids"][id] = -1
-        
+
         self.extract_repo_commits_info()
         self.extract_repo_commits_features(to_csv=to_csv)
         os.chdir(cur_dir)
@@ -108,7 +106,9 @@ class RepositoryExtractor:
         """
         Config the local repository path
         """
-        self.cfg["name"] = os.path.basename(os.path.normpath(os.path.abspath(config.local_repo_path)))
+        self.cfg["name"] = os.path.basename(
+            os.path.normpath(os.path.abspath(config.local_repo_path))
+        )
         self.cfg["main_language"] = config.main_language
         self.cfg["repo_path"] = os.path.abspath(config.local_repo_path)
 
@@ -171,16 +171,20 @@ class RepositoryExtractor:
             except:
                 continue
             for file_diff in files_diff:
-                file_name_a = (file_diff["from"]["file"] if file_diff["rename"]
-                               or file_diff["from"]["mode"] != "0000000" else
-                               file_diff["to"]["file"])
-                file_name_b = (file_diff["to"]["file"] if file_diff["rename"]
-                               or file_diff["to"]["mode"] != "0000000" else
-                               file_diff["from"]["file"])
+                file_name_a = (
+                    file_diff["from"]["file"]
+                    if file_diff["rename"] or file_diff["from"]["mode"] != "0000000"
+                    else file_diff["to"]["file"]
+                )
+                file_name_b = (
+                    file_diff["to"]["file"]
+                    if file_diff["rename"] or file_diff["to"]["mode"] != "0000000"
+                    else file_diff["from"]["file"]
+                )
                 if file_diff["is_binary"] or len(file_diff["content"]) == 0:
                     continue
 
-                if file_diff["from"]["mode"] == "000000000":
+                if file_diff["from"]["mode"] == "0000000":
                     continue
 
                 if len(languages) > 0:
@@ -189,8 +193,7 @@ class RepositoryExtractor:
                         continue
 
                 command = "git blame -t -n -l {} '{}'"
-                file_blame_log = exec_cmd(
-                    command.format(parent_id, file_name_a))
+                file_blame_log = exec_cmd(command.format(parent_id, file_name_a))
                 if not file_blame_log:
                     continue
                 file_blame = get_file_blame(file_blame_log)
@@ -233,14 +236,16 @@ class RepositoryExtractor:
 
         if self.cfg["mode"] == "local":
             uncommit = self.check_uncommit()
-            if not uncommit["diff"]:
+            if "uncommit" in self.repo["commits"]:
+                del self.repo["commits"]["uncommit"]
+            if uncommit is not None and uncommit["diff"]:
                 self.repo["commits"]["uncommit"] = uncommit
-            else:
-                self.repo["commits"]["uncommit"] = None
 
         save_pkl(self.repo["commits"], self.files["commits"])
         # debug file
-        save_json(self.repo["commits"],os.path.join(self.cfg["save_path"], "commits.json"))
+        save_json(
+            self.repo["commits"], os.path.join(self.cfg["save_path"], "commits.json")
+        )
 
     def extract_one_commit_features(self, commit_id):
         commit = self.repo["commits"][commit_id]
@@ -325,14 +330,8 @@ class RepositoryExtractor:
         self.repo["authors"] = {}
         self.repo["files"] = {}
         for commit_id in tqdm(self.repo["commits"]):
-            if commit_id == "uncommit":
-                if self.repo["commits"]["uncommit"] is not None:
-                    self.repo["features"]["uncommit"] = self.extract_one_commit_features("uncommit")
-                else:
-                    self.repo["features"]["uncommit"] = None
-            elif commit_id not in self.repo["features"]:
-                k_features = self.extract_one_commit_features(commit_id)
-                self.repo["features"][commit_id] = k_features
+            k_features = self.extract_one_commit_features(commit_id)
+            self.repo["features"][commit_id] = k_features
 
         # save_pkl(self.repo["files"], self.files["files"])
         # save_pkl(self.repo["authors"], self.files["authors"])
@@ -407,15 +406,15 @@ class RepositoryExtractor:
         """
         infos = []
         features = []
+        not_found_ids = []
         for commit_id in commit_ids:
             if commit_id not in self.repo["commits"]:
-                infos.append({})
-                features.append({})
+                not_found_ids.append(commit_id)
             else:
                 infos.append(self.repo["commits"][commit_id])
                 features.append(self.repo["features"][commit_id])
 
-        return infos, features
+        return infos, features, not_found_ids
 
     def check_uncommit(self):
         command = "git config --get user.name"
@@ -436,16 +435,20 @@ class RepositoryExtractor:
             except:
                 continue
             for file_diff in files_diff:
-                file_name_a = (file_diff["from"]["file"] if file_diff["rename"]
-                               or file_diff["from"]["mode"] != "0000000" else
-                               file_diff["to"]["file"])
-                file_name_b = (file_diff["to"]["file"] if file_diff["rename"]
-                               or file_diff["to"]["mode"] != "0000000" else
-                               file_diff["from"]["file"])
+                file_name_a = (
+                    file_diff["from"]["file"]
+                    if file_diff["rename"] or file_diff["from"]["mode"] != "0000000"
+                    else file_diff["to"]["file"]
+                )
+                file_name_b = (
+                    file_diff["to"]["file"]
+                    if file_diff["rename"] or file_diff["to"]["mode"] != "0000000"
+                    else file_diff["from"]["file"]
+                )
                 if file_diff["is_binary"] or len(file_diff["content"]) == 0:
                     continue
 
-                if file_diff["from"]["mode"] == "000000000":
+                if file_diff["from"]["mode"] == "0000000":
                     continue
 
                 file_language = get_programming_language(file_name_b)
@@ -453,8 +456,7 @@ class RepositoryExtractor:
                     continue
 
                 command = "git blame -t -n -l {} '{}'"
-                file_blame_log = exec_cmd(
-                    command.format(self.head, file_name_a))
+                file_blame_log = exec_cmd(command.format(self.head, file_name_a))
                 if not file_blame_log:
                     continue
                 file_blame = get_file_blame(file_blame_log)
@@ -464,7 +466,7 @@ class RepositoryExtractor:
                 files.append(file_name_b)
 
         commit = {
-            "commit_id": "Uncommit",
+            "commit_id": "uncommit",
             "parent_id": self.head,
             "subject": None,
             "msg": "",
@@ -475,18 +477,33 @@ class RepositoryExtractor:
             "blame": commit_blame,
         }
         return commit
-    
+
     def get_top_commits(self, repo, top):
         # Change to the repository directory
         cur_dir = os.getcwd()
         os.chdir(repo)
         output = []
         # Run the Git command and capture the output
-        command = ["git", "log", "--all", "--no-decorate", "--no-merges", "--pretty=format:%H", "-n", f'{top}']
+        command = [
+            "git",
+            "log",
+            "--all",
+            "--no-decorate",
+            "--no-merges",
+            "--pretty=format:%H",
+            "-n",
+            f"{top}",
+        ]
         try:
-            result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-            output = ['uncommit']
-            output += result.stdout.strip().split('\n')
+            result = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                check=True,
+            )
+            output = ["uncommit"]
+            output += result.stdout.strip().split("\n")
             return output
         except subprocess.CalledProcessError as e:
             print(f"Error running Git command: {e}")
