@@ -96,7 +96,6 @@ def init_model(model_name, dataset, cross, device):
 
 def main():
     logger.info("Start DefectGuard")
-    print("Start DefectGuard")
     start_whole_process_time = time.time()
 
     params = read_args().parse_args()
