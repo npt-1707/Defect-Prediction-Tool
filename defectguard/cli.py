@@ -173,9 +173,6 @@ def main():
         params.commit_hash = extractor.get_top_commits(params.repo, params.top)
         commits, features, not_found_ids = extractor.get_commits(params.commit_hash)
 
-    logger.debug(params.commit_hash)
-    logger.debug(not_found_ids)
-
     user_input["commit_hashes"] = [id for id in params.commit_hash if id not in not_found_ids]
     user_input["features"] = features
     user_input["commit_info"] = []
@@ -194,7 +191,7 @@ def main():
             )
 
         # Inference
-        outputs = {}
+        outputs = {'no_code_change_commit': not_found_ids}
         for model in model_list.keys():
             start_inference_time = time.time()
 
@@ -206,9 +203,7 @@ def main():
                 f"Inference time of {model}: {end_inference_time - start_inference_time}"
             )
 
-        logger.info(f"Final output: {json.dumps(outputs, indent=2)}")
-
-        print(outputs)
+        print(json.dumps(outputs, indent=2))
 
     end_whole_process_time = time.time()
 
