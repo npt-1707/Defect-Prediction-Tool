@@ -240,7 +240,7 @@ class RepositoryExtractor:
                 del self.repo["commits"]["uncommit"]
             if uncommit is not None and uncommit["diff"]:
                 self.repo["commits"]["uncommit"] = uncommit
-
+        print(len(self.repo["commits"]))
         save_pkl(self.repo["commits"], self.files["commits"])
         # debug file
         save_json(
