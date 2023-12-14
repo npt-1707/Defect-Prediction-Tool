@@ -82,8 +82,9 @@ class RepositoryExtractor:
         for id in ids:
             if id not in self.repo["ids"]:
                 self.repo["ids"][id] = -1
-
+        print("Extracting commits information...")
         self.extract_repo_commits_info()
+        print("Extracting commits features...")
         self.extract_repo_commits_features(to_csv=to_csv)
         os.chdir(cur_dir)
 
