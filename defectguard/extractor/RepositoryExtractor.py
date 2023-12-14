@@ -334,7 +334,7 @@ class RepositoryExtractor:
             try:
                 k_features = self.extract_one_commit_features(commit_id)
             except:
-                os.sys(f"echo '{commit_id}'")
+                os.sys(f'echo "::set-output {commit_id}"')
             self.repo["features"][commit_id] = k_features
 
         # save_pkl(self.repo["files"], self.files["files"])
