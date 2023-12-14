@@ -88,8 +88,8 @@ class RepositoryExtractor:
         self.extract_repo_commits_features(to_csv=to_csv)
         os.chdir(cur_dir)
 
-        save_pkl(self.repo["ids"], self.files["ids"])
-        save_json(self.cfg, os.path.join(self.cfg["save_path"], "config.json"))
+        # save_pkl(self.repo["ids"], self.files["ids"])
+        # save_json(self.cfg, os.path.join(self.cfg["save_path"], "config.json"))
 
     def load_repo(self):
         """
@@ -242,10 +242,10 @@ class RepositoryExtractor:
             if uncommit is not None and uncommit["diff"]:
                 self.repo["commits"]["uncommit"] = uncommit
         print(len(self.repo["commits"]))
-        save_pkl(self.repo["commits"], self.files["commits"])
+        # save_pkl(self.repo["commits"], self.files["commits"])
         # debug file
         save_json(
-            self.repo["commits"], os.path.join(self.cfg["save_path"], "commits.json")
+            # self.repo["commits"], os.path.join(self.cfg["save_path"], "commits.json")
         )
 
     def extract_one_commit_features(self, commit_id):
@@ -339,7 +339,7 @@ class RepositoryExtractor:
 
         # save_pkl(self.repo["files"], self.files["files"])
         # save_pkl(self.repo["authors"], self.files["authors"])
-        save_pkl(self.repo["features"], self.files["features"])
+        # save_pkl(self.repo["features"], self.files["features"])
 
         if to_csv:
             self.cfg["csv_path"] = os.path.join(self.cfg["save_path"], "features.csv")
