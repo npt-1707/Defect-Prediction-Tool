@@ -330,7 +330,10 @@ class RepositoryExtractor:
         self.repo["authors"] = {}
         self.repo["files"] = {}
         for commit_id in tqdm(self.repo["commits"]):
-            k_features = self.extract_one_commit_features(commit_id)
+            try:
+                k_features = self.extract_one_commit_features(commit_id)
+            except:
+                print(commit_id)
             self.repo["features"][commit_id] = k_features
 
         # save_pkl(self.repo["files"], self.files["files"])
