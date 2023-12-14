@@ -9,7 +9,8 @@ from .models.lapredict.warper import LAPredict
 from .models.tlel.warper import TLEL
 from .models.jitline.warper import JITLine
 from argparse import Namespace
-from .utils.logger import logger
+from .utils.logger import ic
+from datetime import datetime
 
 __version__ = "0.1.0"
 
@@ -73,6 +74,9 @@ def read_args():
         "-device", type=str, default="cpu", help="Eg: cpu, cuda, cuda:1"
     )
 
+    parser.add_argument("-debug", action="store_true", help="Turn on system debug print")
+    parser.add_argument("-log_to_file", action="store_true", help="Logging to file instead of stdout")
+
     return parser
 
 
@@ -96,10 +100,24 @@ def init_model(model_name, dataset, cross, device):
 
 
 def main():
-    logger.info("Start DefectGuard")
-    start_whole_process_time = time.time()
-
     params = read_args().parse_args()
+
+    if not params.debug:
+        ic.disable()
+    
+    if params.log_to_file:
+        # Create a folder named 'logs' if it doesn't exist
+        if not os.path.exists('logs'):
+            os.makedirs('logs')
+
+        # Define a file to log IceCream output
+        log_file_path = os.path.join('logs', 'logs.log')
+
+        # Replace logging configuration with IceCream configuration
+        ic.configureOutput(prefix=f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} | ', outputFunction=lambda x: open(log_file_path, 'a').write(x + '\n'))
+
+    ic("Start DefectGuard")
+    start_whole_process_time = time.time()
 
     user_input = {
         "models": params.models,
@@ -108,7 +126,7 @@ def main():
         "device": params.device,
     }
 
-    logger.info(user_input)
+    ic(user_input)
 
     # User's input handling
     if params.github_link != "":
@@ -199,7 +217,7 @@ def main():
 
             end_inference_time = time.time()
 
-            logger.info(
+            ic(
                 f"Inference time of {model}: {end_inference_time - start_inference_time}"
             )
 
@@ -207,7 +225,7 @@ def main():
 
     end_whole_process_time = time.time()
 
-    logger.info(f"Extract features time: {end_extract_time - start_extract_time}")
-    logger.info(
+    ic(f"Extract features time: {end_extract_time - start_extract_time}")
+    ic(
         f"Whole process time: {end_whole_process_time - start_whole_process_time}"
     )
