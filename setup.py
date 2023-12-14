@@ -20,7 +20,6 @@ setup(
         'pandas',
         'PyGithub',
         'Requests',
-        'tqdm',
         'scikit-learn',
         'torch',
         'imblearn',

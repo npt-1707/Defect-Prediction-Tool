@@ -1,7 +1,7 @@
 import argparse, os, getpass, time, json
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
-from .utils.utils import commit_to_info
+from .utils.utils import commit_to_info, SRC_PATH
 from .models.deepjit.warper import DeepJIT
 from .models.cc2vec.warper import CC2Vec
 from .models.simcom.warper import SimCom
@@ -107,11 +107,11 @@ def main():
     
     if params.log_to_file:
         # Create a folder named 'logs' if it doesn't exist
-        if not os.path.exists('logs'):
-            os.makedirs('logs')
+        if not os.path.exists(f'{SRC_PATH}/logs'):
+            os.makedirs(f'{SRC_PATH}/logs')
 
         # Define a file to log IceCream output
-        log_file_path = os.path.join('logs', 'logs.log')
+        log_file_path = os.path.join(f'{SRC_PATH}/logs', 'logs.log')
 
         # Replace logging configuration with IceCream configuration
         ic.configureOutput(prefix=f'{datetime.now().strftime("%Y-%m-%d %H:%M:%S")} | ', outputFunction=lambda x: open(log_file_path, 'a').write(x + '\n'))

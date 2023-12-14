@@ -2,9 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 from github import Github
-from tqdm import tqdm
 from .utils.utils import *
 import datetime
+from defectguard.utils.logger import ic
 
 
 class RepositoryExtractor:
@@ -226,7 +226,8 @@ class RepositoryExtractor:
             languages = [self.cfg["main_language"]]
         else:
             languages = []
-        for commit_id in tqdm(self.repo["ids"]):
+        ic("Extracting repo commits infomation...")
+        for commit_id in self.repo["ids"]:
             if self.repo["ids"][commit_id] == -1:
                 commit = self.extract_one_commit_info(commit_id, languages)
                 if not commit["diff"]:
@@ -329,7 +330,8 @@ class RepositoryExtractor:
     def extract_repo_commits_features(self, to_csv=False):
         self.repo["authors"] = {}
         self.repo["files"] = {}
-        for commit_id in tqdm(self.repo["commits"]):
+        ic('Extracting repo commits features...')
+        for commit_id in self.repo["commits"]:
             k_features = self.extract_one_commit_features(commit_id)
             self.repo["features"][commit_id] = k_features
 
