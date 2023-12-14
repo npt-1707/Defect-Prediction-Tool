@@ -1,7 +1,7 @@
 import argparse, os, getpass, time, json
 from urllib.parse import urlparse
 from .extractor.RepositoryExtractor import RepositoryExtractor
-from .utils.utils import commit_to_info, SRC_PATH
+from .utils.utils import commit_to_info, SRC_PATH, sort_by_predict
 from .models.deepjit.warper import DeepJIT
 from .models.cc2vec.warper import CC2Vec
 from .models.simcom.warper import SimCom
@@ -74,6 +74,7 @@ def read_args():
         "-device", type=str, default="cpu", help="Eg: cpu, cuda, cuda:1"
     )
 
+    parser.add_argument("-sort", action="store_true", help="Sort output of model by predict score")
     parser.add_argument("-debug", action="store_true", help="Turn on system debug print")
     parser.add_argument("-log_to_file", action="store_true", help="Logging to file instead of stdout")
 
@@ -213,7 +214,7 @@ def main():
         for model in model_list.keys():
             start_inference_time = time.time()
 
-            outputs[model] = model_list[model].handle(user_input)
+            outputs[model] = sort_by_predict(model_list[model].handle(user_input)) if params.sort else model_list[model].handle(user_input)
 
             end_inference_time = time.time()
 

@@ -47,6 +47,11 @@ IDS = {
     'jitline': '',
 }
 
+def sort_by_predict(commit_list):
+    # Sort the list of dictionaries based on the "predict" value in descending order
+    sorted_list = sorted(commit_list, key=lambda x: x['predict'], reverse=True)
+    return sorted_list
+
 def create_download_list(model_name, dataset, project):
     download_list = []
     dictionary = f'{dataset}_dictionary_{project}'
