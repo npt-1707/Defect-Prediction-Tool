@@ -35,7 +35,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Install DefectGuard
         run: |
-          pip install -i https://test.pypi.org/simple/ defectguard==0.1.26
+          pip install -i https://test.pypi.org/simple/ defectguard==0.1.29
       - name: Run DefectGuard
         run: |
-          defectguard -models deepjit -dataset platform -repo . -commit_hash 4f60b59efa6aba1ee4504c643cad28b082e78417 -main_language Python
+          defectguard -models deepjit -dataset platform -repo . -top 20 -main_language Python
