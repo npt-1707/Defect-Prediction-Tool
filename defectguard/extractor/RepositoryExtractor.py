@@ -478,7 +478,7 @@ class RepositoryExtractor:
         }
         return commit
 
-    def get_top_commits(self, repo, top):
+    def get_top_commits(self, repo, top, uncommit=False):
         # Change to the repository directory
         cur_dir = os.getcwd()
         os.chdir(repo)
@@ -502,8 +502,11 @@ class RepositoryExtractor:
                 text=True,
                 check=True,
             )
-            output = ["uncommit"]
-            output += result.stdout.strip().split("\n")
+            if uncommit:
+                output = ["uncommit"]
+                output += result.stdout.strip().split("\n")
+            else:
+                output = result.stdout.strip().split("\n")
             return output
         except subprocess.CalledProcessError as e:
             print(f"Error running Git command: {e}")

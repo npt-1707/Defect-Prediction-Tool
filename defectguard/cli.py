@@ -67,6 +67,7 @@ def read_args():
         help="Dataset's name",
     )
     parser.add_argument("-cross", action="store_true", help="Cross project")
+    parser.add_argument("-uncommit", action="store_true", help="Include uncommit in list when using -top")
 
     parser.add_argument(
         "-device", type=str, default="cpu", help="Eg: cpu, cuda, cuda:1"
@@ -165,12 +166,16 @@ def main():
     extractor.config_repo(Namespace(**extract_config))
     if len(params.commit_hash) > 0:
         commits, features, not_found_ids = extractor.get_commits(params.commit_hash)
-    else:
-        params.commit_hash = extractor.get_top_commits(params.repo, params.top - 1)
+    elif params.uncommit:
+        params.commit_hash = extractor.get_top_commits(params.repo, params.top, params.uncommit)
         commits, features, not_found_ids = extractor.get_commits(params.commit_hash)
-    # debug
-    # print(json.dumps(commits, indent=4))
-    # print(params.commit_hash)
+    else:
+        params.commit_hash = extractor.get_top_commits(params.repo, params.top)
+        commits, features, not_found_ids = extractor.get_commits(params.commit_hash)
+
+    logger.debug(params.commit_hash)
+    logger.debug(not_found_ids)
+
     user_input["commit_hashes"] = [id for id in params.commit_hash if id not in not_found_ids]
     user_input["features"] = features
     user_input["commit_info"] = []
