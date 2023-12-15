@@ -79,6 +79,7 @@ class RepositoryExtractor:
         cur_dir = os.getcwd()
         os.chdir(self.cfg["repo_path"])
         ids = get_commit_hashes(self.cfg["date"])[::-1]
+        self.head = ids[-1]
         for id in ids:
             if id not in self.repo["ids"]:
                 self.repo["ids"][id] = -1
@@ -98,8 +99,6 @@ class RepositoryExtractor:
             "ids": load_pkl(self.files["ids"]),
             "commits": load_pkl(self.files["commits"]),
             "features": load_pkl(self.files["features"]),
-            # "authors": load_pkl(self.files["authors"]),
-            # "files": load_pkl(self.files["files"]),
         }
 
     def init_local_repo(self, config):
